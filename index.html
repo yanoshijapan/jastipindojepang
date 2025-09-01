@@ -27,7 +27,6 @@
             -webkit-text-size-adjust: 100%;
         }
 
-        /* --- STYLE BARU UNTUK MODAL PERSETUJUAN --- */
         #consent-overlay {
             position: fixed;
             top: 0;
@@ -92,7 +91,6 @@
             background-color: #a0a0a0;
             cursor: not-allowed;
         }
-        /* --- AKHIR STYLE BARU --- */
 
         .hidden {
             display: none !important;
@@ -268,8 +266,8 @@
             <ul>
                 <li>Barang yang dikirim adalah barang legal dan tidak melanggar hukum di Indonesia maupun Jepang. Seperti obat-obatan terlarang, senjata api, senjata tajam, bahan peledak, barang yang mudah terbakar, barang palsu, uang palsu dan beberapa barang spesifik dibawah ini :</li>
                 <br>
-                <img src="https://yanoshijapan.github.io/asetonline/barangumum.jpg" alt="Barang Dilarang">
-                <img src="https://yanoshijapan.github.io/asetonline/barangspesifik.jpg" alt="Barang Dilarang">
+                <img src="https://yanoshijapan.github.io/asetonline/barangumum.jpg" alt="Barang Dilarang Umum">
+                <img src="https://yanoshijapan.github.io/asetonline/barangspesifik.jpg" alt="Barang Dilarang Spesifik">
                 
                 <p>Jika barang tersebut tetap di kirim ke basecamp kami, maka kami akan kembalikan barang tersebut ke pengirim.</p>
                 <li>Kami tidak bertanggung jawab atas kerusakan barang yang disebabkan oleh pihak ketiga (maskapai/kurir).</li>
@@ -300,6 +298,15 @@
         <h1>Yanoshi Jastip<br>Indonesia - Jepang</h1>
         <form id="submissionForm">
         
+            <div class="input-group">
+                <label for="tanggalJastip">Pilih Tanggal Jastip</label>
+                <select id="tanggalJastip" name="tanggalJastip" required>
+                    <option value="" disabled selected>Pilih Tanggal</option>
+                    <option value="2025-09-21">21 September 2025</option>
+                    <option value="2025-10-18">18 Oktober 2025</option>
+                </select>
+            </div>
+
             <div class="input-group">
                 <label for="nama">Nama Pengirim (di Indonesia)</label>
                 <input type="text" id="nama" name="nama" required>
@@ -402,6 +409,7 @@
 
     const form = document.getElementById('submissionForm');
     // Variabel disesuaikan dengan ID elemen di HTML
+    const tanggalJastipSelect = document.getElementById('tanggalJastip'); // <-- VARIABEL BARU
     const namaInput = document.getElementById('nama');
     const waInput = document.getElementById('whatsapp');
     const namaPenerimaInput = document.getElementById('nama-penerima');
@@ -427,6 +435,7 @@
         const fileList = Array.from(fotoInput.files).map(file => ({ name: file.name, size: file.size }));
         
         const data = {
+            tanggalJastip: tanggalJastipSelect.value, // <-- DATA BARU DISIMPAN
             nama: namaInput.value,
             whatsapp: waInput.value,
             namaPenerima: namaPenerimaInput.value,
@@ -446,6 +455,7 @@
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (savedData) {
             const data = JSON.parse(savedData);
+            tanggalJastipSelect.value = data.tanggalJastip || ''; // <-- DATA BARU DILOAD
             namaInput.value = data.nama || '';
             waInput.value = data.whatsapp || '';
             namaPenerimaInput.value = data.namaPenerima || '';
@@ -553,6 +563,7 @@
 
             // Mengambil data teks dari formulir yang SESUAI
             const textData = {
+                tanggalJastip: tanggalJastipSelect.value, // <-- DATA BARU DIKIRIM
                 nama: namaInput.value,
                 whatsapp: waInput.value,
                 namaPenerima: namaPenerimaInput.value,
