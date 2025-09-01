@@ -27,6 +27,77 @@
             -webkit-text-size-adjust: 100%;
         }
 
+        /* --- STYLE BARU UNTUK MODAL PERSETUJUAN --- */
+        #consent-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        #consent-modal {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        #consent-modal h3 {
+            font-family: 'Poppins', sans-serif;
+            margin-top: 0;
+            text-align: center;
+        }
+        #terms-text {
+            max-height: 40vh;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+        #terms-text img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+        .consent-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+        .consent-controls label {
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+        #agree-button {
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary-color);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #agree-button:disabled {
+            background-color: #a0a0a0;
+            cursor: not-allowed;
+        }
+        /* --- AKHIR STYLE BARU --- */
+
+        .hidden {
+            display: none !important;
+        }
+
         .fixed-header {
             position: fixed;
             top: 0;
@@ -189,89 +260,139 @@
 </head>
 <body>
 
-<header class="fixed-header">
-    <div class="header-content">
-        <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn blue-btn">Home</a>
+<div id="consent-overlay">
+    <div id="consent-modal">
+        <h3>Syarat & Ketentuan Jastip</h3>
+        <div id="terms-text">
+            <p><strong>Harap baca dengan saksama sebelum melanjutkan:</strong></p>
+            <ul>
+                <li>Barang yang dikirim adalah barang legal dan tidak melanggar hukum di Indonesia maupun Jepang. Seperti obat-obatan terlarang, senjata api, senjata tajam, bahan peledak, barang yang mudah terbakar, barang palsu, uang palsu dan beberapa barang spesifik dibawah ini :</li>
+                <br>
+                <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj7b7c53e0oYp2UvYg2gQ278b1h686zF-k30tP91yV6-G614f04sP6Vd1C2vI76V8Xvj7V3_mU-689zQnJ1zVd3f9b8c0a/s1600/larangan.jpg" alt="Barang Dilarang">
+                
+                <p>Jika barang tersebut tetap di kirim ke basecamp kami, maka kami akan kembalikan barang tersebut ke pengirim.</p>
+                <li>Kami tidak bertanggung jawab atas kerusakan barang yang disebabkan oleh pihak ketiga (maskapai/kurir).</li>
+                <li>Keterlambatan pengiriman yang disebabkan oleh faktor di luar kendali kami (cuaca, delay pesawat, dll) akan diinformasikan sesegera mungkin.</li>
+                <li>Dengan melanjutkan, Anda menyatakan bahwa semua informasi yang diberikan adalah benar dan akurat.</li>
+                <li>Pajak bea cukai (jika ada) akan menjadi tanggung jawab penerima.</li>
+            </ul>
+        </div>
+        <div class="consent-controls">
+            <label>
+                <input type="checkbox" id="consent-checkbox">
+                Saya telah membaca dan menyetujui semua syarat & ketentuan yang berlaku.
+            </label>
+            <button id="agree-button" disabled>Setuju & Lanjutkan</button>
+        </div>
     </div>
-</header>
-    
-<div class="container">
-    <h1>Yanoshi Jastip<br>Indonesia - Jepang</h1>
-    <form id="submissionForm">
-    
-        <div class="input-group">
-            <label for="nama">Nama Pengirim (di Indonesia)</label>
-            <input type="text" id="nama" name="nama" required>
-        </div>
-        <div class="input-group">
-            <label for="whatsapp">Nomor WhatsApp Pengirim</label>
-            <input type="tel" id="whatsapp" name="whatsapp" placeholder="Contoh: 08123456789" required>
-        </div>
-    
-        <div class="input-group">
-            <label for="nama-penerima">Nama Penerima (di Jepang)</label>
-            <input type="text" id="nama-penerima" name="namaPenerima" required>
-        </div>
-        <div class="input-group">
-            <label for="whatsapp-penerima">Nomor Telepon Penerima di Jepang (11 digit, jika tidak ada isi "00000000000")</label>
-            <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{11}" title="Harus 11 digit angka" placeholder="Contoh: 08012345678" required>
-        </div>
-
-        <div class="input-group">
-            <label for="alamatJepang">Alamat lengkap di Jepang (Isi romaji/alphabet)</label>
-            <textarea id="alamatJepang" name="alamatJepang" rows="4" placeholder="Contoh: Aichiken, Nagoya, Atsuta, Mutsuno x-chome x-banchi, Jinguhigashi Pakuhaitsu xx-go xxx" required></textarea>
-        </div>
-        <div class="input-group">
-            <label for="kodePosJepang">Kode Pos Alamat Jepang (7 angka)</label>
-            <input type="text" id="kodePosJepang" name="kodePosJepang" pattern="\d{7}" title="Harus 7 digit angka" placeholder="Contoh: 4560021" required>
-        </div>
-
-        <div class="input-group">
-            <label for="foto">Mohon foto alamat lengkap yang terdapat di KTP Jepang (Penerima) (Maks.2)</label>
-            <input type="file" id="foto" name="foto" multiple accept="image/*" required>
-            <div id="preview-container"></div>
-        </div>
-
-        <div class="input-group">
-            <label for="barangJastip">Barang yang Ingin di Jastip</label>
-            <textarea id="barangJastip" name="barangJastip" rows="4" placeholder="Tulis beserta kuantiti / jumlah barang per item&#10;Contoh: tas = 1 pcs, dompet = 2 pcs, dll" required></textarea>
-        </div>
-
-        <div class="input-group">
-            <label>Apakah ada barang yang perlu kami belanjakan terlebih dahulu?</label>
-            <div class="radio-group">
-                <input type="radio" id="belanjaYa" name="perluBelanja" value="Ya" required>
-                <label for="belanjaYa">Ya</label>
-                <input type="radio" id="belanjaTidak" name="perluBelanja" value="Tidak">
-                <label for="belanjaTidak">Tidak</label>
-            </div>
-        </div>
-
-        <div class="input-group">
-            <label for="jamKirim">Request Jam Pengiriman</label>
-            <select id="jamKirim" name="jamKirim" required>
-                <option value="" disabled selected>Pilih Waktu</option>
-                <option value="Pagi - Siang Hari">Pagi - Siang Hari</option>
-                <option value="14:00 - 16:00">Jam 14:00 - 16:00</option>
-                <option value="16:00 - 18:00">Jam 16:00 - 18:00</option>
-                <option value="18:00 - 20:00">Jam 18:00 - 20:00</option>
-                <option value="19:00 - 21:00">Jam 19:00 - 21:00</option>
-            </select>
-        </div>
-        
-        
-        <button type="submit" class="submit-btn" id="submit-btn">Submit Form</button>
-        
-        <div id="progressBarContainer">
-            <div id="progressBar">0%</div>
-        </div>
-        <div id="status"></div>
-        <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">Konfirmasi ke WhatsApp</a>
-
-    </form>
 </div>
 
+
+<main class="hidden">
+    <header class="fixed-header">
+        <div class="header-content">
+            <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn blue-btn">Home</a>
+        </div>
+    </header>
+        
+    <div class="container">
+        <h1>Yanoshi Jastip<br>Indonesia - Jepang</h1>
+        <form id="submissionForm">
+        
+            <div class="input-group">
+                <label for="nama">Nama Pengirim (di Indonesia)</label>
+                <input type="text" id="nama" name="nama" required>
+            </div>
+            <div class="input-group">
+                <label for="whatsapp">Nomor WhatsApp Pengirim</label>
+                <input type="tel" id="whatsapp" name="whatsapp" placeholder="Contoh: 08123456789" required>
+            </div>
+        
+            <div class="input-group">
+                <label for="nama-penerima">Nama Penerima (di Jepang)</label>
+                <input type="text" id="nama-penerima" name="namaPenerima" required>
+            </div>
+            <div class="input-group">
+                <label for="whatsapp-penerima">Nomor Telepon Penerima di Jepang (11 digit, jika tidak ada isi "00000000000")</label>
+                <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{11}" title="Harus 11 digit angka" placeholder="Contoh: 08012345678" required>
+            </div>
+
+            <div class="input-group">
+                <label for="alamatJepang">Alamat lengkap di Jepang (Isi romaji/alphabet)</label>
+                <textarea id="alamatJepang" name="alamatJepang" rows="4" placeholder="Contoh: Aichiken, Nagoya, Atsuta, Mutsuno x-chome x-banchi, Jinguhigashi Pakuhaitsu xx-go xxx" required></textarea>
+            </div>
+            <div class="input-group">
+                <label for="kodePosJepang">Kode Pos Alamat Jepang (7 angka)</label>
+                <input type="text" id="kodePosJepang" name="kodePosJepang" pattern="\d{7}" title="Harus 7 digit angka" placeholder="Contoh: 4560021" required>
+            </div>
+
+            <div class="input-group">
+                <label for="foto">Mohon foto alamat lengkap yang terdapat di KTP Jepang (Penerima) (Maks.2)</label>
+                <input type="file" id="foto" name="foto" multiple accept="image/*" required>
+                <div id="preview-container"></div>
+            </div>
+
+            <div class="input-group">
+                <label for="barangJastip">Barang yang Ingin di Jastip</label>
+                <textarea id="barangJastip" name="barangJastip" rows="4" placeholder="Tulis beserta kuantiti / jumlah barang per item&#10;Contoh: tas = 1 pcs, dompet = 2 pcs, dll" required></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Apakah ada barang yang perlu kami belanjakan terlebih dahulu?</label>
+                <div class="radio-group">
+                    <input type="radio" id="belanjaYa" name="perluBelanja" value="Ya" required>
+                    <label for="belanjaYa">Ya</label>
+                    <input type="radio" id="belanjaTidak" name="perluBelanja" value="Tidak">
+                    <label for="belanjaTidak">Tidak</label>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="jamKirim">Request Jam Pengiriman</label>
+                <select id="jamKirim" name="jamKirim" required>
+                    <option value="" disabled selected>Pilih Waktu</option>
+                    <option value="Pagi - Siang Hari">Pagi - Siang Hari</option>
+                    <option value="14:00 - 16:00">Jam 14:00 - 16:00</option>
+                    <option value="16:00 - 18:00">Jam 16:00 - 18:00</option>
+                    <option value="18:00 - 20:00">Jam 18:00 - 20:00</option>
+                    <option value="19:00 - 21:00">Jam 19:00 - 21:00</option>
+                </select>
+            </div>
+            
+            
+            <button type="submit" class="submit-btn" id="submit-btn">Submit Form</button>
+            
+            <div id="progressBarContainer">
+                <div id="progressBar">0%</div>
+            </div>
+            <div id="status"></div>
+            <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">Konfirmasi ke WhatsApp</a>
+
+        </form>
+    </div>
+</main>
+
 <script>
+    // ================================================================
+    // === LOGIKA BARU UNTUK MODAL PERSETUJUAN ===
+    // ================================================================
+    const consentOverlay = document.getElementById('consent-overlay');
+    const consentCheckbox = document.getElementById('consent-checkbox');
+    const agreeButton = document.getElementById('agree-button');
+    const mainContent = document.querySelector('main');
+
+    consentCheckbox.addEventListener('change', () => {
+        agreeButton.disabled = !consentCheckbox.checked;
+    });
+
+    agreeButton.addEventListener('click', () => {
+        if (consentCheckbox.checked) {
+            consentOverlay.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+        }
+    });
+
+
     // ================================================================
     // === DEKLARASI VARIABEL GLOBAL ===
     // ================================================================
@@ -397,8 +518,8 @@
     fotoInput.addEventListener('change', (e) => {
         previewContainer.innerHTML = '';
         const files = e.target.files;
-        if (files.length > 10) {
-            alert('Maksimal 10 foto.');
+        if (files.length > 2) { // Batas diubah menjadi 2
+            alert('Maksimal 2 foto.');
             fotoInput.value = ''; return;
         }
         for (const file of files) {
