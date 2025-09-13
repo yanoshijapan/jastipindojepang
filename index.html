@@ -11,22 +11,74 @@
     <style>
         :root {
             --primary-color: #17a2b8;
+            --secondary-color: #007bff;
             --success-color: #28a745;
             --error-color: #dc3545;
             --light-gray: #f9f9f9;
             --dark-gray: #333;
             --border-color: #ddd;
         }
+
+        /* ================================== */
+        /* === ANIMASI LATAR BELAKANG === */
+        /* ================================== */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
-            background-color: var(--light-gray);
             color: var(--dark-gray);
             margin: 0;
             padding: 1rem;
             padding-top: 70px;
             -webkit-text-size-adjust: 100%;
+            /* Latar belakang gradasi animasi */
+            background: linear-gradient(-45deg, #eef7f9, #e6f2f5, #dbebf0, #e6f2f5);
+            background-size: 400% 400%;
+            animation: gradientAnimation 15s ease infinite;
+        }
+        
+        /* ================================== */
+        /* === KEYFRAMES UNTUK ANIMASI === */
+        /* ================================== */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* ================================== */
+        /* === MODAL & KONTEN UTAMA === */
+        /* ================================== */
         #consent-overlay {
             position: fixed;
             top: 0;
@@ -38,7 +90,10 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
+            /* Animasi fade in untuk overlay */
+            animation: fadeIn 0.5s ease-out forwards;
         }
+
         #consent-modal {
             background-color: #fff;
             padding: 2rem;
@@ -46,7 +101,17 @@
             max-width: 600px;
             width: 90%;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            /* Animasi slide in untuk modal */
+            animation: slideInUp 0.6s ease-out forwards;
+            animation-delay: 0.2s;
+            opacity: 0; /* Mulai dari transparan */
         }
+        
+        /* Kelas untuk animasi fade-out modal */
+        #consent-modal.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
         #consent-modal h3 {
             font-family: 'Poppins', sans-serif;
             margin-top: 0;
@@ -85,17 +150,30 @@
             color: white;
             font-family: 'Poppins', sans-serif;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        /* Efek klik pada tombol */
+        #agree-button:active:not(:disabled) {
+            transform: scale(0.98);
         }
         #agree-button:disabled {
             background-color: #a0a0a0;
             cursor: not-allowed;
         }
 
-        .hidden {
-            display: none !important;
+        /* Mengganti display:none agar transisi opacity berfungsi */
+        main.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s, visibility 0.5s;
         }
 
+        main {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.5s, visibility 0.5s;
+        }
+        
         .fixed-header {
             position: fixed;
             top: 0;
@@ -105,6 +183,8 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             padding: 10px 0;
             z-index: 1000;
+            /* Animasi saat muncul */
+            animation: slideInDown 0.8s ease-out forwards;
         }
         
         .header-content {
@@ -122,16 +202,15 @@
             font-family: 'Poppins', sans-serif;
             font-weight: 500;
             color: white;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        /* Efek klik pada tombol */
+        .header-btn:active {
+             transform: scale(0.98);
         }
         
-        .blue-btn {
-            background-color: #007bff;
-        }
-        
-        .blue-btn:hover {
-            background-color: #0056b3;
-        }
+        .blue-btn { background-color: var(--secondary-color); }
+        .blue-btn:hover { background-color: #0056b3; }
         
         .container {
             max-width: 800px;
@@ -140,6 +219,8 @@
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            /* Animasi saat muncul */
+            animation: slideInUp 0.8s ease-out forwards;
         }
         h1 {
             font-family: 'Poppins', sans-serif;
@@ -150,7 +231,17 @@
         }
         .input-group {
             margin-bottom: 1.25rem;
+            /* Properti awal untuk animasi staggered */
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
+        /* Kelas untuk memicu animasi staggered */
+        .input-group.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         label {
             display: block;
             font-weight: bold;
@@ -164,26 +255,28 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 1rem;
             box-sizing: border-box;
+            /* Transisi untuk mikro-interaksi */
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* Mikro-interaksi saat input aktif */
+        input[type="text"]:focus, input[type="tel"]:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.2);
         }
         textarea {
             resize: vertical;
             min-height: 100px;
         }
-        input[type="file"] {
-            padding: 0.5rem;
-        }
+        input[type="file"] { padding: 0.5rem; }
         .radio-group {
             display: flex;
             align-items: center;
             gap: 15px;
         }
-        .radio-group input[type="radio"] {
-            width: auto;
-        }
-        .radio-group label {
-            margin-bottom: 0;
-            font-weight: 400;
-        }
+        .radio-group input[type="radio"] { width: auto; }
+        .radio-group label { margin-bottom: 0; font-weight: 400; }
+        
         .submit-btn {
             width: 100%;
             padding: 1rem;
@@ -198,15 +291,18 @@
             box-sizing: border-box;
             background-color: var(--primary-color);
             color: white;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease;
         }
-        .submit-btn:hover:not(:disabled) {
-            background-color: #138496;
+        .submit-btn:hover:not(:disabled) { background-color: #138496; }
+        /* Efek klik pada tombol */
+        .submit-btn:active:not(:disabled) {
+            transform: scale(0.98);
         }
         .submit-btn:disabled {
             background-color: #a0a0a0;
             cursor: not-allowed;
         }
+        
         #preview-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
@@ -254,6 +350,22 @@
             font-family: 'Poppins', sans-serif;
             text-align: center;
         }
+        .button-link {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: var(--secondary-color);
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 5px;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+        .button-link:hover { background-color: #0056b3; }
+        /* Efek klik pada tombol */
+        .button-link:active {
+            transform: scale(0.98);
+        }
     </style>
 </head>
 <body>
@@ -290,7 +402,7 @@
 <main class="hidden">
     <header class="fixed-header">
         <div class="header-content">
-            <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn blue-btn">Home</a>
+            <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn blue-btn">kembali ke website</a>
         </div>
     </header>
         
@@ -302,8 +414,9 @@
                 <label for="tanggalJastip">Pilih Tanggal Jastip</label>
                 <select id="tanggalJastip" name="tanggalJastip" required>
                     <option value="" disabled selected>Pilih Tanggal</option>
-                    <option value="2025-09-21">21 September 2025</option>
-                    <option value="2025-10-18">18 Oktober 2025</option>
+                    <option value="2025 September 21">21 September 2025</option>
+                    <option value="2025 Oktober 16">16 Oktober 2025</option>
+                    <option value="2025 Oktober 28">28 Oktober 2025</option>
                 </select>
             </div>
 
@@ -353,6 +466,8 @@
                     <input type="radio" id="belanjaTidak" name="perluBelanja" value="Tidak">
                     <label for="belanjaTidak">Tidak</label>
                 </div>
+                <p style="margin-top: 15px;">atau kunjungi toko jastip kita di bawah ini (opsional)</p>
+                <a href="https://yanoshijapan.github.io/belanjajastip/" class="button-link">kunjungi toko jastip</a>
             </div>
 
             <div class="input-group">
@@ -368,7 +483,7 @@
             </div>
             
             
-            <button type="submit" class="submit-btn" id="submit-btn">Submit Form</button>
+            <button type="submit" class="submit-btn" id="submit-btn">Kirim Form</button>
             
             <div id="progressBarContainer">
                 <div id="progressBar">0%</div>
@@ -382,9 +497,10 @@
 
 <script>
     // ================================================================
-    // === LOGIKA BARU UNTUK MODAL PERSETUJUAN ===
+    // === LOGIKA BARU UNTUK MODAL & ANIMASI ===
     // ================================================================
     const consentOverlay = document.getElementById('consent-overlay');
+    const consentModal = document.getElementById('consent-modal');
     const consentCheckbox = document.getElementById('consent-checkbox');
     const agreeButton = document.getElementById('agree-button');
     const mainContent = document.querySelector('main');
@@ -395,21 +511,35 @@
 
     agreeButton.addEventListener('click', () => {
         if (consentCheckbox.checked) {
-            consentOverlay.classList.add('hidden');
-            mainContent.classList.remove('hidden');
+            // 1. Tambahkan kelas untuk animasi fade-out
+            consentModal.classList.add('fade-out');
+            consentOverlay.style.animation = 'fadeOut 0.5s ease-out forwards';
+
+            // 2. Tunggu animasi selesai, lalu sembunyikan modal & tampilkan konten
+            setTimeout(() => {
+                consentOverlay.style.display = 'none'; // Sembunyikan total
+                mainContent.classList.remove('hidden');
+
+                // 3. Picu animasi staggered untuk elemen form
+                const formElements = document.querySelectorAll('.input-group');
+                formElements.forEach((el, index) => {
+                    setTimeout(() => {
+                        el.classList.add('visible');
+                    }, index * 100); // Setiap elemen muncul dengan jeda 100ms
+                });
+            }, 500); // Durasi sama dengan animasi fadeOut
         }
     });
 
 
     // ================================================================
-    // === DEKLARASI VARIABEL GLOBAL ===
+    // === DEKLARASI VARIABEL GLOBAL (TETAP SAMA) ===
     // ================================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
-    const STORAGE_KEY = 'formDataIndoJepang'; // Menggunakan key yang berbeda untuk form ini
+    const STORAGE_KEY = 'formDataIndoJepang';
 
     const form = document.getElementById('submissionForm');
-    // Variabel disesuaikan dengan ID elemen di HTML
-    const tanggalJastipSelect = document.getElementById('tanggalJastip'); // <-- VARIABEL BARU
+    const tanggalJastipSelect = document.getElementById('tanggalJastip'); 
     const namaInput = document.getElementById('nama');
     const waInput = document.getElementById('whatsapp');
     const namaPenerimaInput = document.getElementById('nama-penerima');
@@ -427,15 +557,14 @@
     const whatsappBtn = document.getElementById('whatsapp-btn');
 
     // ================================================================
-    // === FUNGSI-FUNGSI BANTU ===
+    // === FUNGSI-FUNGSI BANTU (TETAP SAMA) ===
     // ================================================================
 
-    // Fungsi untuk menyimpan data formulir ke localStorage
     function saveFormData() {
         const fileList = Array.from(fotoInput.files).map(file => ({ name: file.name, size: file.size }));
         
         const data = {
-            tanggalJastip: tanggalJastipSelect.value, // <-- DATA BARU DISIMPAN
+            tanggalJastip: tanggalJastipSelect.value, 
             nama: namaInput.value,
             whatsapp: waInput.value,
             namaPenerima: namaPenerimaInput.value,
@@ -450,12 +579,11 @@
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
-    // Fungsi untuk memuat data formulir dari localStorage
     function loadFormData() {
         const savedData = localStorage.getItem(STORAGE_KEY);
         if (savedData) {
             const data = JSON.parse(savedData);
-            tanggalJastipSelect.value = data.tanggalJastip || ''; // <-- DATA BARU DILOAD
+            tanggalJastipSelect.value = data.tanggalJastip || ''; 
             namaInput.value = data.nama || '';
             waInput.value = data.whatsapp || '';
             namaPenerimaInput.value = data.namaPenerima || '';
@@ -489,7 +617,6 @@
         event.returnValue = '';
     };
 
-    // Fungsi kompresi gambar (tidak diubah)
     function compressImage(file, maxSizeKB = 300) {
         return new Promise((resolve, reject) => {
             const fileSizeKB = file.size / 1024;
@@ -519,7 +646,7 @@
     }
 
     // ================================================================
-    // === EVENT LISTENERS ===
+    // === EVENT LISTENERS (TETAP SAMA) ===
     // ================================================================
 
     document.addEventListener('DOMContentLoaded', loadFormData);
@@ -529,7 +656,7 @@
     fotoInput.addEventListener('change', (e) => {
         previewContainer.innerHTML = '';
         const files = e.target.files;
-        if (files.length > 2) { // Batas diubah menjadi 2
+        if (files.length > 2) {
             alert('Maksimal 2 foto.');
             fotoInput.value = ''; return;
         }
@@ -561,9 +688,8 @@
                 throw new Error("Tidak ada file dipilih.");
             }
 
-            // Mengambil data teks dari formulir yang SESUAI
             const textData = {
-                tanggalJastip: tanggalJastipSelect.value, // <-- DATA BARU DIKIRIM
+                tanggalJastip: tanggalJastipSelect.value, 
                 nama: namaInput.value,
                 whatsapp: waInput.value,
                 namaPenerima: namaPenerimaInput.value,
@@ -584,7 +710,7 @@
                 fileData.push({
                     fileName: files[i].name,
                     mimeType: 'image/jpeg',
-                    content: compressedContent.split('base64,')[1] // Kirim hanya base64 string
+                    content: compressedContent.split('base64,')[1]
                 });
             }
 
@@ -615,7 +741,6 @@
                     
                     const whatsappMessage = `Hai min, Saya ${textData.nama} sudah isi form Jastip Indo-Jepang per tanggal ${tanggalFormatted}. Mohon dicek ya, terima kasih!`;
                     const encodedMessage = encodeURIComponent(whatsappMessage);
-                    // Ganti 628xxxxxxxxxx dengan nomor WhatsApp tujuan Anda
                     const whatsappLink = `https://wa.me/6281315431551?text=${encodedMessage}`;
                     
                     whatsappBtn.href = whatsappLink;
