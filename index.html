@@ -466,7 +466,7 @@
                     <input type="radio" id="belanjaTidak" name="perluBelanja" value="Tidak">
                     <label for="belanjaTidak">Tidak</label>
                 </div>
-                <p style="margin-top: 15px;">atau kunjungi toko jastip kita di bawah ini (opsional)</p>
+                <p style="margin-top: 15px;">atau kunjungi toko jastip kita di bawah ini jika ada yang di belanjakan (opsional)</p>
                 <a href="https://yanoshijapan.github.io/belanjajastip/" class="button-link">kunjungi toko jastip</a>
             </div>
 
@@ -769,7 +769,7 @@
             progressBar.innerText = 'Gagal';
         } finally {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Submit Form';
+            submitBtn.innerText = 'Kirim Ulang Form';
             setTimeout(() => {
                 if(progressBar.style.backgroundColor !== 'var(--error-color)') {
                     progressBarContainer.style.display = 'none';
