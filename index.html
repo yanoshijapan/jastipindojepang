@@ -482,6 +482,10 @@
                 </select>
             </div>
             
+            <div class="input-group">
+                <label for="kodeVoucher">Kode Voucher/Referral (Opsional)</label>
+                <input type="text" id="kodeVoucher" name="kodeVoucher">
+            </div>
             
             <button type="submit" class="submit-btn" id="submit-btn">Kirim Form</button>
             
@@ -555,6 +559,7 @@
     const progressBar = document.getElementById('progressBar');
     const statusDiv = document.getElementById('status');
     const whatsappBtn = document.getElementById('whatsapp-btn');
+    const kodeVoucherInput = document.getElementById('kodeVoucher');
 
     // ================================================================
     // === FUNGSI-FUNGSI BANTU (TETAP SAMA) ===
@@ -574,7 +579,8 @@
             barangJastip: barangJastipInput.value,
             perluBelanja: document.querySelector('input[name="perluBelanja"]:checked')?.value || '',
             jamKirim: jamKirimSelect.value,
-            fileInfo: fileList
+            fileInfo: fileList,
+            kodeVoucher: kodeVoucherInput.value
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -592,6 +598,7 @@
             kodePosJepangInput.value = data.kodePosJepang || '';
             barangJastipInput.value = data.barangJastip || '';
             jamKirimSelect.value = data.jamKirim || '';
+            kodeVoucherInput.value = data.kodeVoucher || '';
             
             if (data.perluBelanja) {
                 const radioBtn = document.querySelector(`input[name="perluBelanja"][value="${data.perluBelanja}"]`);
@@ -698,7 +705,8 @@
                 kodePosJepang: kodePosJepangInput.value,
                 barangJastip: barangJastipInput.value,
                 perluBelanja: document.querySelector('input[name="perluBelanja"]:checked')?.value || 'Tidak diisi',
-                jamKirim: jamKirimSelect.value
+                jamKirim: jamKirimSelect.value,
+                kodeVoucher: kodeVoucherInput.value
             };
         
             const fileData = [];
