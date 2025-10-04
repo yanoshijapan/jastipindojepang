@@ -480,6 +480,11 @@
                     <option value="19:00 - 21:00">Jam 19:00 - 21:00</option>
                 </select>
             </div>
+
+            <div class="input-group">
+                <label for="akunSosmed">Akun Sosmed (Tulis salah satu : Instagram, Tiktok atau Line)</label>
+                <input type="text" id="akunSosmed" name="akunSosmed">
+            </div>
             
             <div class="input-group">
                 <label for="kodeVoucher">Kode Voucher/Referral (Opsional)</label>
@@ -559,6 +564,7 @@
     const statusDiv = document.getElementById('status');
     const whatsappBtn = document.getElementById('whatsapp-btn');
     const kodeVoucherInput = document.getElementById('kodeVoucher');
+    const akunSosmedInput = document.getElementById('akunSosmed');
 
     // ================================================================
     // === FUNGSI-FUNGSI BANTU (TETAP SAMA) ===
@@ -579,7 +585,8 @@
             perluBelanja: document.querySelector('input[name="perluBelanja"]:checked')?.value || '',
             jamKirim: jamKirimSelect.value,
             fileInfo: fileList,
-            kodeVoucher: kodeVoucherInput.value
+            kodeVoucher: kodeVoucherInput.value,
+            akunSosmed: akunSosmedInput.value
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
@@ -598,6 +605,7 @@
             barangJastipInput.value = data.barangJastip || '';
             jamKirimSelect.value = data.jamKirim || '';
             kodeVoucherInput.value = data.kodeVoucher || '';
+            akunSosmedInput.value = data.akunSosmed || '';
             
             if (data.perluBelanja) {
                 const radioBtn = document.querySelector(`input[name="perluBelanja"][value="${data.perluBelanja}"]`);
@@ -705,7 +713,8 @@
                 barangJastip: barangJastipInput.value,
                 perluBelanja: document.querySelector('input[name="perluBelanja"]:checked')?.value || 'Tidak diisi',
                 jamKirim: jamKirimSelect.value,
-                kodeVoucher: kodeVoucherInput.value
+                kodeVoucher: kodeVoucherInput.value,
+                akunSosmed: akunSosmedInput.value
             };
         
             const fileData = [];
