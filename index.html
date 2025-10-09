@@ -366,6 +366,10 @@
         .button-link:active {
             transform: scale(0.98);
         }
+        .full {
+          text-decoration: line-through;
+          color: #888; /* Warna abu-abu agar terlihat tidak aktif */
+        }
     </style>
 </head>
 <body>
@@ -414,7 +418,7 @@
                 <label for="tanggalJastip">Pilih Tanggal Jastip</label>
                 <select id="tanggalJastip" name="tanggalJastip" required>
                     <option value="" disabled selected>Pilih Tanggal</option>
-                    <option value="16 Oktober 2025">16 Oktober 2025</option>
+                    <option value="16 Oktober 2025" disabled class="full">16 Oktober 2025 (FULL)</option>
                     <option value="28 Oktober 2025">28 Oktober 2025</option>
                 </select>
             </div>
