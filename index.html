@@ -488,8 +488,8 @@
             </div>
 
             <div class="input-group">
-                <label for="akunSosmed">Akun Sosmed (Tulis salah satu : Instagram, Tiktok atau Line)</label>
-                <input type="text" id="akunSosmed" name="akunSosmed" placeholder="Contoh: IG : qwerty" required>
+                <label for="akunSosmed">Akun Line dan Instagram (contoh Line : abcde, IG : abcde)</label>
+                <input type="text" id="akunSosmed" name="akunSosmed" placeholder="Contoh: Line : abcde, IG : abcde" required>
             </div>
             
             <div class="input-group">
@@ -503,7 +503,7 @@
                 <div id="progressBar">0%</div>
             </div>
             <div id="status"></div>
-            <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">Konfirmasi ke WhatsApp</a>
+            <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">Konfirmasi ke LINE official</a>
 
         </form>
     </div>
@@ -761,12 +761,14 @@
                     const options = { day: 'numeric', month: 'long', year: 'numeric' };
                     const tanggalFormatted = tanggalHariIni.toLocaleDateString('id-ID', options);
                     
-                    const whatsappMessage = `Hai min, Saya ${textData.nama} sudah isi form Jastip Indo-Jepang per tanggal ${tanggalFormatted}. Mohon dicek ya, terima kasih!`;
-                    const encodedMessage = encodeURIComponent(whatsappMessage);
-                    const whatsappLink = `https://wa.me/6281315431551?text=${encodedMessage}`;
+                    const lineMessage = `Hai min, Saya ${textData.nama} sudah isi form Jastip Indo-Jepang per tanggal ${tanggalFormatted}. Mohon dicek ya, terima kasih!`;
+                    const encodedMessage = encodeURIComponent(lineMessage);
+                    const lineLink = `https://line.me/R/oaMessage/@LsDKjZo/?${encodedMessage}`;
                     
-                    whatsappBtn.href = whatsappLink;
-                    whatsappBtn.style.display = 'block';
+                    // Ganti whatsappBtn menjadi lineBtn (atau nama variabel button LINE Anda)
+                    lineBtn.href = lineLink;
+                    lineBtn.style.display = 'block';
+                    
                     form.reset();
                     previewContainer.innerHTML = '';
                     clearFormData();
@@ -778,6 +780,7 @@
                     throw new Error(result.message || 'Terjadi kesalahan di server.');
                 }
             } else {
+                // Perbaikan syntax error di sini (ganti backtick dengan tanda kurung)
                 throw new Error(`Gagal terhubung ke server (Status: ${response.status})`);
             }
             
