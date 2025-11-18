@@ -19,9 +19,6 @@
             --border-color: #ddd;
         }
 
-        /* ================================== */
-        /* === ANIMASI LATAR BELAKANG === */
-        /* ================================== */
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -35,15 +32,11 @@
             padding: 1rem;
             padding-top: 70px;
             -webkit-text-size-adjust: 100%;
-            /* Latar belakang gradasi animasi */
             background: linear-gradient(-45deg, #eef7f9, #e6f2f5, #dbebf0, #e6f2f5);
             background-size: 400% 400%;
             animation: gradientAnimation 15s ease infinite;
         }
         
-        /* ================================== */
-        /* === KEYFRAMES UNTUK ANIMASI === */
-        /* ================================== */
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -76,9 +69,23 @@
             }
         }
 
-        /* ================================== */
-        /* === MODAL & KONTEN UTAMA === */
-        /* ================================== */
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            70% {
+                transform: scale(0.9);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
         #consent-overlay {
             position: fixed;
             top: 0;
@@ -90,7 +97,6 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            /* Animasi fade in untuk overlay */
             animation: fadeIn 0.5s ease-out forwards;
         }
 
@@ -101,13 +107,11 @@
             max-width: 600px;
             width: 90%;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            /* Animasi slide in untuk modal */
             animation: slideInUp 0.6s ease-out forwards;
             animation-delay: 0.2s;
-            opacity: 0; /* Mulai dari transparan */
+            opacity: 0;
         }
         
-        /* Kelas untuk animasi fade-out modal */
         #consent-modal.fade-out {
             animation: fadeOut 0.5s ease-out forwards;
         }
@@ -152,7 +156,6 @@
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
-        /* Efek klik pada tombol */
         #agree-button:active:not(:disabled) {
             transform: scale(0.98);
         }
@@ -161,7 +164,117 @@
             cursor: not-allowed;
         }
 
-        /* Mengganti display:none agar transisi opacity berfungsi */
+        /* POPUP SUKSES */
+        #success-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        #success-popup-box {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 2.5rem;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            text-align: center;
+            animation: bounceIn 0.6s ease-out forwards;
+        }
+
+        #success-popup-box .success-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background-color: var(--success-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        #success-popup-box h2 {
+            font-family: 'Poppins', sans-serif;
+            color: var(--success-color);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        #success-popup-box p {
+            color: #555;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .popup-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .popup-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .popup-btn:active {
+            transform: scale(0.98);
+        }
+
+        .line-btn {
+            background-color: #00B900;
+            box-shadow: 0 4px 15px rgba(0, 185, 0, 0.3);
+        }
+
+        .line-btn:hover {
+            background-color: #009700;
+            box-shadow: 0 6px 20px rgba(0, 185, 0, 0.4);
+        }
+
+        .whatsapp-btn-popup {
+            background-color: #ffffff;
+            color: #25D366;
+            border: 2px solid #25D366;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+        }
+
+        .whatsapp-btn-popup:hover {
+            background-color: #f0f0f0;
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.3);
+        }
+        
+        .whatsapp-btn-popup svg {
+            fill: #25D366;
+        }
+
+        .popup-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
         main.hidden {
             opacity: 0;
             visibility: hidden;
@@ -183,7 +296,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             padding: 10px 0;
             z-index: 1000;
-            /* Animasi saat muncul */
             animation: slideInDown 0.8s ease-out forwards;
         }
         
@@ -204,7 +316,6 @@
             color: white;
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
-        /* Efek klik pada tombol */
         .header-btn:active {
              transform: scale(0.98);
         }
@@ -219,7 +330,6 @@
             padding: 1.5rem;
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            /* Animasi saat muncul */
             animation: slideInUp 0.8s ease-out forwards;
         }
         h1 {
@@ -231,12 +341,10 @@
         }
         .input-group {
             margin-bottom: 1.25rem;
-            /* Properti awal untuk animasi staggered */
             opacity: 0;
             transform: translateY(20px);
             transition: opacity 0.5s ease-out, transform 0.5s ease-out;
         }
-        /* Kelas untuk memicu animasi staggered */
         .input-group.visible {
             opacity: 1;
             transform: translateY(0);
@@ -255,10 +363,8 @@
             font-family: 'Montserrat', sans-serif;
             font-size: 1rem;
             box-sizing: border-box;
-            /* Transisi untuk mikro-interaksi */
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        /* Mikro-interaksi saat input aktif */
         input[type="text"]:focus, input[type="tel"]:focus, textarea:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
@@ -294,7 +400,6 @@
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
         .submit-btn:hover:not(:disabled) { background-color: #138496; }
-        /* Efek klik pada tombol */
         .submit-btn:active:not(:disabled) {
             transform: scale(0.98);
         }
@@ -339,17 +444,6 @@
             margin-top: 15px;
             font-weight: 500;
         }
-        .whatsapp-btn {
-            display: none;
-            margin-top: 15px;
-            padding: 10px 20px;
-            background-color: var(--success-color);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-            font-family: 'Poppins', sans-serif;
-            text-align: center;
-        }
         .button-link {
             display: inline-block;
             padding: 10px 15px;
@@ -362,13 +456,27 @@
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
         .button-link:hover { background-color: #0056b3; }
-        /* Efek klik pada tombol */
         .button-link:active {
             transform: scale(0.98);
         }
         .full {
           text-decoration: line-through;
-          color: #888; /* Warna abu-abu agar terlihat tidak aktif */
+          color: #888;
+        }
+
+        @media (max-width: 600px) {
+            #success-popup-box {
+                padding: 2rem 1.5rem;
+            }
+            
+            #success-popup-box h2 {
+                font-size: 1.5rem;
+            }
+            
+            .popup-btn {
+                padding: 0.9rem 1.5rem;
+                font-size: 0.95rem;
+            }
         }
     </style>
 </head>
@@ -402,6 +510,28 @@
     </div>
 </div>
 
+<!-- POPUP SUKSES -->
+<div id="success-popup-overlay">
+    <div id="success-popup-box">
+        <div class="success-icon">✓</div>
+        <h2>Data Berhasil Terkirim!</h2>
+        <p>Terima kasih telah mengisi formulir. Silakan konfirmasi ke Admin melalui salah satu platform di bawah ini:</p>
+        <div class="popup-buttons">
+            <a href="#" id="line-confirm-btn" class="popup-btn line-btn" target="_blank">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+                </svg>
+                Konfirmasi ke LINE Official (Rekomendasi)
+            </a>
+            <a href="#" id="whatsapp-confirm-btn" class="popup-btn whatsapp-btn-popup" target="_blank">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                </svg>
+                Konfirmasi ke WhatsApp
+            </a>
+        </div>
+    </div>
+</div>
 
 <main class="hidden">
     <header class="fixed-header">
@@ -418,9 +548,8 @@
                 <label for="tanggalJastip">Pilih Tanggal Jastip</label>
                 <select id="tanggalJastip" name="tanggalJastip" required>
                     <option value="" disabled selected>Pilih Tanggal</option>
-                    <option value="16 Oktober 2025" disabled class="full">16 Oktober 2025 (CLOSE)</option>
-                    <option value="28 Oktober 2025" disabled class="full">28 Oktober 2025 (FULL)</option>
-                    <option value="9 November 2025">9 November 2025</option>
+                    <option value="28 Oktober 2025" disabled class="full">28 Oktober 2025 (CLOSE)</option>
+                    <option value="9 November 2025" disabled class="full">9 November 2025 (CLOSE)</option>
                     <option value="22 November 2025">22 November 2025</option>
                 </select>
             </div>
@@ -503,55 +632,28 @@
                 <div id="progressBar">0%</div>
             </div>
             <div id="status"></div>
-            <a href="#" id="whatsapp-btn" class="whatsapp-btn" target="_blank">Konfirmasi ke LINE official</a>
 
         </form>
     </div>
 </main>
 
 <script>
-    // ================================================================
-    // === LOGIKA BARU UNTUK MODAL & ANIMASI ===
-    // ================================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
+    const STORAGE_KEY = 'formDataIndoJepang';
+
+    // Modal consent elements
     const consentOverlay = document.getElementById('consent-overlay');
     const consentModal = document.getElementById('consent-modal');
     const consentCheckbox = document.getElementById('consent-checkbox');
     const agreeButton = document.getElementById('agree-button');
     const mainContent = document.querySelector('main');
 
-    consentCheckbox.addEventListener('change', () => {
-        agreeButton.disabled = !consentCheckbox.checked;
-    });
+    // Success popup elements
+    const successPopupOverlay = document.getElementById('success-popup-overlay');
+    const lineConfirmBtn = document.getElementById('line-confirm-btn');
+    const whatsappConfirmBtn = document.getElementById('whatsapp-confirm-btn');
 
-    agreeButton.addEventListener('click', () => {
-        if (consentCheckbox.checked) {
-            // 1. Tambahkan kelas untuk animasi fade-out
-            consentModal.classList.add('fade-out');
-            consentOverlay.style.animation = 'fadeOut 0.5s ease-out forwards';
-
-            // 2. Tunggu animasi selesai, lalu sembunyikan modal & tampilkan konten
-            setTimeout(() => {
-                consentOverlay.style.display = 'none'; // Sembunyikan total
-                mainContent.classList.remove('hidden');
-
-                // 3. Picu animasi staggered untuk elemen form
-                const formElements = document.querySelectorAll('.input-group');
-                formElements.forEach((el, index) => {
-                    setTimeout(() => {
-                        el.classList.add('visible');
-                    }, index * 100); // Setiap elemen muncul dengan jeda 100ms
-                });
-            }, 500); // Durasi sama dengan animasi fadeOut
-        }
-    });
-
-
-    // ================================================================
-    // === DEKLARASI VARIABEL GLOBAL (TETAP SAMA) ===
-    // ================================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
-    const STORAGE_KEY = 'formDataIndoJepang';
-
+    // Form elements
     const form = document.getElementById('submissionForm');
     const tanggalJastipSelect = document.getElementById('tanggalJastip'); 
     const namaInput = document.getElementById('nama');
@@ -568,14 +670,34 @@
     const progressBarContainer = document.getElementById('progressBarContainer');
     const progressBar = document.getElementById('progressBar');
     const statusDiv = document.getElementById('status');
-    const whatsappBtn = document.getElementById('whatsapp-btn');
     const kodeVoucherInput = document.getElementById('kodeVoucher');
     const akunSosmedInput = document.getElementById('akunSosmed');
 
-    // ================================================================
-    // === FUNGSI-FUNGSI BANTU (TETAP SAMA) ===
-    // ================================================================
+    // Consent modal logic
+    consentCheckbox.addEventListener('change', () => {
+        agreeButton.disabled = !consentCheckbox.checked;
+    });
 
+    agreeButton.addEventListener('click', () => {
+        if (consentCheckbox.checked) {
+            consentModal.classList.add('fade-out');
+            consentOverlay.style.animation = 'fadeOut 0.5s ease-out forwards';
+
+            setTimeout(() => {
+                consentOverlay.style.display = 'none';
+                mainContent.classList.remove('hidden');
+
+                const formElements = document.querySelectorAll('.input-group');
+                formElements.forEach((el, index) => {
+                    setTimeout(() => {
+                        el.classList.add('visible');
+                    }, index * 100);
+                });
+            }, 500);
+        }
+    });
+
+    // Form data management
     function saveFormData() {
         const fileList = Array.from(fotoInput.files).map(file => ({ name: file.name, size: file.size }));
         
@@ -665,10 +787,7 @@
         });
     }
 
-    // ================================================================
-    // === EVENT LISTENERS (TETAP SAMA) ===
-    // ================================================================
-
+    // Event listeners
     document.addEventListener('DOMContentLoaded', loadFormData);
     form.addEventListener('input', saveFormData);
     form.addEventListener('input', () => { window.addEventListener('beforeunload', handleBeforeUnload); });
@@ -678,7 +797,8 @@
         const files = e.target.files;
         if (files.length > 2) {
             alert('Maksimal 2 foto.');
-            fotoInput.value = ''; return;
+            fotoInput.value = ''; 
+            return;
         }
         for (const file of files) {
             const reader = new FileReader();
@@ -691,12 +811,12 @@
         }
     });
 
+    // Form submission
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         submitBtn.disabled = true;
         submitBtn.innerText = 'Mengirim...';
         statusDiv.innerText = '';
-        whatsappBtn.style.display = 'none';
         progressBarContainer.style.display = 'block';
         progressBar.style.width = '10%';
         progressBar.innerText = 'Mempersiapkan data...';
@@ -754,20 +874,34 @@
             if (response.ok) {
                 const result = await response.json();
                 if (result.status === 'success') {
+                    progressBar.style.width = '100%';
+                    progressBar.innerText = 'Selesai!';
+                    
                     statusDiv.innerText = 'Data berhasil dikirim!';
                     statusDiv.style.color = 'var(--success-color)';
                     
+                    // Prepare messages
                     const tanggalHariIni = new Date();
                     const options = { day: 'numeric', month: 'long', year: 'numeric' };
                     const tanggalFormatted = tanggalHariIni.toLocaleDateString('id-ID', options);
                     
                     const lineMessage = `Hai min, Saya ${textData.nama} sudah isi form Jastip Indo-Jepang per tanggal ${tanggalFormatted}. Mohon dicek ya, terima kasih!`;
-                    const encodedMessage = encodeURIComponent(lineMessage);
                     const lineLink = `https://line.me/ti/p/@506hjesi`;
-
-                    whatsappBtn.href = lineLink;
-                    whatsappBtn.style.display = 'block';
                     
+                    const waMessage = `Hai min, Saya ${textData.nama} sudah isi form Jastip Indo-Jepang per tanggal ${tanggalFormatted}. Mohon dicek ya, terima kasih!`;
+                    const encodedWaMessage = encodeURIComponent(waMessage);
+                    const waLink = `https://wa.me/628131053924?text=${encodedWaMessage}`;
+                    
+                    // Set links
+                    lineConfirmBtn.href = lineLink;
+                    whatsappConfirmBtn.href = waLink;
+                    
+                    // Show success popup after short delay
+                    setTimeout(() => {
+                        successPopupOverlay.style.display = 'flex';
+                    }, 800);
+                    
+                    // Clear form
                     form.reset();
                     previewContainer.innerHTML = '';
                     clearFormData();
@@ -779,12 +913,8 @@
                     throw new Error(result.message || 'Terjadi kesalahan di server.');
                 }
             } else {
-                // Perbaikan syntax error di sini (ganti backtick dengan tanda kurung)
                 throw new Error(`Gagal terhubung ke server (Status: ${response.status})`);
             }
-            
-            progressBar.style.width = '100%';
-            progressBar.innerText = 'Selesai!';
 
         } catch (error) {
             statusDiv.innerText = `Error: ${error.message}`;
@@ -803,7 +933,14 @@
             }, 5000);
         }
     });
+
+    // Close popup when clicking outside
+    successPopupOverlay.addEventListener('click', (e) => {
+        if (e.target === successPopupOverlay) {
+            successPopupOverlay.style.display = 'none';
+        }
+    });
 </script>
 
 </body>
-</html>
+</html
