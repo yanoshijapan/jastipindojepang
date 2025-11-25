@@ -290,6 +290,7 @@
         </div>
     </div>
 </div>
+
 <header class="fixed-header">
     <div class="header-logo">
         <img src="https://yanoshijapan.github.io/jastip/jastip%202.png" alt="Yanoshi Logo">
@@ -343,7 +344,7 @@
                 </div>
                 <div class="input-group">
                     <label>Nomor Telepon Penerima di Jepang (10/11 digit, jika tidak ada bisa gunakan nomor kaisha (perusahaan), teman atau kerabat di Jepang)</label>
-										<input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{10,11}" placeholder="080/090... (10/11 digit)" required>
+                    <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{10,11}" placeholder="080/090... (10/11 digit)" required>
                 </div>
                 <div class="input-group">
                     <label>Kode Pos (7 Digit)</label>
@@ -459,7 +460,76 @@
 </div>
 
 <script>
-    // --- BAGIAN BARU: LOGIKA POPUP CONSENT ---
+    // === KONFIGURASI INDEXED DB (Untuk Penyimpanan Foto Aman & Besar) ===
+    const DB_NAME = 'YanoshiJastipDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'jastip_images';
+
+    // Helper: Buka Database
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(DB_NAME, DB_VERSION);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+                }
+            };
+            request.onsuccess = (e) => resolve(e.target.result);
+            request.onerror = (e) => reject(e.target.error);
+        });
+    }
+
+    // Helper: Simpan File ke DB
+    async function saveFileToDB(file) {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        const store = tx.objectStore(STORE_NAME);
+        
+        // Baca file sebagai ArrayBuffer untuk disimpan
+        const arrayBuffer = await file.arrayBuffer();
+        
+        return new Promise((resolve, reject) => {
+            const request = store.put({
+                id: file.name, // Gunakan nama file sebagai ID sederhana
+                name: file.name,
+                type: file.type,
+                data: arrayBuffer,
+                lastModified: file.lastModified
+            });
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject();
+        });
+    }
+
+    // Helper: Ambil Semua File dari DB
+    async function getAllFilesFromDB() {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        return new Promise((resolve, reject) => {
+            const request = store.getAll();
+            request.onsuccess = (e) => {
+                const results = e.target.result;
+                // Convert kembali ke object File
+                const files = results.map(item => new File([item.data], item.name, {
+                    type: item.type,
+                    lastModified: item.lastModified
+                }));
+                resolve(files);
+            };
+            request.onerror = () => reject();
+        });
+    }
+
+    // Helper: Hapus Database (Saat Submit Sukses)
+    async function clearDB() {
+        const db = await openDB();
+        const tx = db.transaction(STORE_NAME, 'readwrite');
+        tx.objectStore(STORE_NAME).clear();
+    }
+
+    // === LOGIKA POPUP CONSENT (DENGAN MEMORY) ===
     document.addEventListener("DOMContentLoaded", function() {
         const termsBox = document.getElementById('terms-text');
         const checkBox = document.getElementById('consent-checkbox');
@@ -467,12 +537,19 @@
         const agreeBtn = document.getElementById('agree-button');
         const overlay = document.getElementById('consent-overlay');
         
-        // Kunci scroll body utama agar user fokus ke popup
-        document.body.style.overflow = 'hidden';
+        // Cek apakah user sudah pernah setuju sebelumnya
+        const hasAgreed = localStorage.getItem('yanoshi_terms_agreed');
+        
+        if (hasAgreed === 'true') {
+            // Jika sudah setuju, sembunyikan popup langsung
+            overlay.style.display = 'none';
+        } else {
+            // Jika belum, kunci scroll
+            document.body.style.overflow = 'hidden';
+        }
 
         // 1. Deteksi Scroll Mentok Bawah
         termsBox.addEventListener('scroll', function() {
-            // Logika: jika posisi scroll + tinggi area >= tinggi total konten (minus toleransi)
             if (termsBox.scrollTop + termsBox.clientHeight >= termsBox.scrollHeight - 10) {
                 checkBox.disabled = false;
                 labelText.style.color = 'var(--text-main)'; 
@@ -493,17 +570,18 @@
 
         // 3. Tombol Setuju Diklik
         agreeBtn.addEventListener('click', function() {
-            // Fade out animation
             overlay.style.transition = 'opacity 0.3s ease';
             overlay.style.opacity = '0';
             
+            // SIMPAN STATUS SETUJU KE LOCALSTORAGE
+            localStorage.setItem('yanoshi_terms_agreed', 'true');
+            
             setTimeout(() => {
                 overlay.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Kembalikan scroll
+                document.body.style.overflow = 'auto'; 
             }, 300);
         });
     });
-    // --- END LOGIKA POPUP ---
 
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
     
@@ -519,61 +597,122 @@
     // State management
     let uploadedFiles = []; 
     let isKtpValid = false; 
-		let formProgress = {}; // Menyimpan progress form di memory
-		let autoSaveInterval = null;
+    let autoSaveInterval = null;
 
-		// === AUTO-SAVE FUNCTIONS ===
-		function saveFormProgress() {
-				const formData = new FormData(document.getElementById('submissionForm'));
-				formProgress = {
-						step: currentStep,
-						data: Object.fromEntries(formData),
-						uploadedFiles: uploadedFiles.map(f => ({ name: f.name, size: f.size })),
-						isKtpValid: isKtpValid,
-						timestamp: new Date().toISOString()
-				};
-				console.log('Progress saved:', formProgress);
-		}
+    // === AUTO-SAVE SYSTEM (LOCALSTORAGE + INDEXEDDB) ===
+    
+    async function saveFormProgress() {
+        const formData = new FormData(document.getElementById('submissionForm'));
+        const formEntries = Object.fromEntries(formData);
+        
+        // 1. Simpan Data Teks ke LocalStorage
+        const textData = {
+            step: currentStep,
+            data: formEntries,
+            isKtpValid: isKtpValid, // Simpan status validasi KTP
+            timestamp: new Date().toISOString()
+        };
+        localStorage.setItem('yanoshi_form_draft', JSON.stringify(textData));
 
-		function loadFormProgress() {
-				if (formProgress && formProgress.data) {
-						// Restore input values
-						for (const [key, value] of Object.entries(formProgress.data)) {
-								const input = document.querySelector(`[name="${key}"]`);
-								if (input) {
-										if (input.type === 'radio') {
-												const radio = document.querySelector(`[name="${key}"][value="${value}"]`);
-												if (radio) radio.checked = true;
-										} else {
-												input.value = value;
-										}
-								}
-						}
-						
-						// Restore step
-						if (formProgress.step) {
-								currentStep = formProgress.step;
-								updateUI(currentStep);
-						}
-						
-						console.log('Progress loaded');
-				}
-		}
+        // 2. Simpan File Gambar ke IndexedDB (Hanya jika ada perubahan file baru)
+        // Kita clear dulu DB yang lama untuk update (simplifikasi)
+        if (uploadedFiles.length > 0) {
+            await clearDB(); // Hapus yg lama agar tidak duplikat
+            for (const file of uploadedFiles) {
+                await saveFileToDB(file);
+            }
+        }
+    }
 
-		function startAutoSave() {
-				// Auto-save setiap 10 detik
-				if (autoSaveInterval) clearInterval(autoSaveInterval);
-				autoSaveInterval = setInterval(() => {
-						saveFormProgress();
-				}, 10000); // 10 detik
-		}
+    async function loadFormProgress() {
+        try {
+            // 1. Load Data Teks
+            const savedJson = localStorage.getItem('yanoshi_form_draft');
+            
+            // 2. Load File Gambar
+            const savedFiles = await getAllFilesFromDB();
 
-		function stopAutoSave() {
-				if (autoSaveInterval) {
-						clearInterval(autoSaveInterval);
-						autoSaveInterval = null;
-				}
-		}
+            if (savedJson) {
+                const savedState = JSON.parse(savedJson);
+                
+                // Restore Input Values
+                if (savedState.data) {
+                    for (const [key, value] of Object.entries(savedState.data)) {
+                        const input = document.querySelector(`[name="${key}"]`);
+                        if (input) {
+                            if (input.type === 'radio') {
+                                const radio = document.querySelector(`[name="${key}"][value="${value}"]`);
+                                if (radio) radio.checked = true;
+                            } else {
+                                input.value = value;
+                            }
+                        }
+                    }
+                }
+
+                // Restore Step
+                if (typeof savedState.step !== 'undefined') {
+                    currentStep = savedState.step;
+                }
+
+                // Restore Status KTP Valid
+                if (savedState.isKtpValid) {
+                    isKtpValid = savedState.isKtpValid;
+                }
+            }
+
+            // 3. Restore Files ke UI
+            if (savedFiles && savedFiles.length > 0) {
+                uploadedFiles = savedFiles;
+                const previewContainer = document.getElementById('preview-container');
+                const scanStatus = document.getElementById('scan-status');
+
+                // Bersihkan container dulu
+                previewContainer.innerHTML = '';
+                
+                // Render ulang preview
+                savedFiles.forEach(file => {
+                    renderPreview(file);
+                });
+
+                // Update status UI jika valid
+                if (isKtpValid) {
+                    scanStatus.style.display = 'flex';
+                    scanStatus.className = 'scan-success';
+                    scanStatus.innerHTML = `✅ <b>Data Restored!</b> Dokumen KTP Anda tersimpan aman.`;
+                    
+                    // Sembunyikan warning
+                    const warning = document.getElementById('ktp-warning');
+                    if(warning) warning.style.display = 'none';
+                }
+            }
+
+            // Update UI ke step yang tersimpan
+            updateUI(currentStep);
+
+        } catch (error) {
+            console.error("Gagal load progress:", error);
+            // Fallback jika error, mulai dari awal
+            updateUI(0);
+        }
+    }
+
+    function clearAllStorage() {
+        localStorage.removeItem('yanoshi_form_draft');
+        // Jangan hapus 'yanoshi_terms_agreed' agar user tidak perlu setuju terms lagi
+        clearDB(); // Hapus gambar
+    }
+
+    function startAutoSave() {
+        if (autoSaveInterval) clearInterval(autoSaveInterval);
+        // Save setiap kali ada input (debounce) atau interval
+        document.getElementById('submissionForm').addEventListener('input', () => {
+             // Save on input change (ringan karena ke LocalStorage & DB async)
+             saveFormProgress();
+        });
+        
+        // Juga save saat pindah step (sudah di handle di tombol next)
+    }
 
     // --- NAVIGATION LOGIC ---
     function updateUI(n) {
@@ -601,29 +740,24 @@
             nextBtn.disabled = false;
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
-				
-				saveFormProgress();
     }
 
     // --- VALIDATION ---
     function validateStep(n) {
-		
-				if (n === 2) {
-						const nomorJepang = document.getElementById('whatsapp-penerima');
-						const value = nomorJepang.value.trim();
-						
-						// Validasi: hanya angka, panjang 10-11 digit
-						if (value && !/^\d{10,11}$/.test(value)) {
-								alert("Nomor telepon Jepang harus 10 atau 11 digit angka.");
-								nomorJepang.style.borderColor = 'var(--error)';
-								return false;
-						} else {
-								nomorJepang.style.borderColor = '#e2e8f0';
-						}
-				}
-				
+        if (n === 2) {
+            const nomorJepang = document.getElementById('whatsapp-penerima');
+            const value = nomorJepang.value.trim();
+            if (value && !/^\d{10,11}$/.test(value)) {
+                alert("Nomor telepon Jepang harus 10 atau 11 digit angka.");
+                nomorJepang.style.borderColor = 'var(--error)';
+                return false;
+            } else {
+                nomorJepang.style.borderColor = '#e2e8f0';
+            }
+        }
+        
         if (n === 2 && !isKtpValid) {
-            alert("Harap upload KTP yang valid dan tunggu proses scan Tesseract selesai.");
+            alert("Harap upload KTP yang valid dan tunggu proses scan selesai.");
             return false;
         }
 
@@ -652,7 +786,6 @@
         return isValid;
     }
 
-    // Shake Animation CSS
     const styleSheet = document.createElement("style");
     styleSheet.innerText = `@keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }`;
     document.head.appendChild(styleSheet);
@@ -675,7 +808,6 @@
     });
 
     async function performOCRScan(newFiles) {
-        // Lock navigation while scanning
         isKtpValid = false;
         checkKtpGate();
         
@@ -687,20 +819,13 @@
             let textFound = false;
 
             for (const file of newFiles) {
-                // Jalankan Tesseract OCR
+                // Tesseract
                 const { data: { text } } = await Tesseract.recognize(
                     file,
-                    'eng', // Menggunakan 'eng' karena lebih cepat dan menangkap angka/romaji alamat umum
-                    { 
-                        logger: m => console.log(m) // Cek console untuk progress
-                    }
+                    'eng', 
+                    { logger: m => console.log(m) }
                 );
                 
-                console.log("Hasil Scan:", text);
-
-                // VALIDASI LOGIC:
-                // Kita cek apakah ada angka (kode pos/nomor jalan) ATAU huruf yang cukup panjang (alamat)
-                // Regex ini mencari minimal ada 1 digit angka DAN minimal ada 3 huruf (alamat)
                 const hasNumbers = /\d+/.test(text);
                 const hasLetters = /[a-zA-Z]{3,}/.test(text);
                 
@@ -710,26 +835,28 @@
             }
 
             if (textFound) {
-                // Jika lolos validasi OCR
                 newFiles.forEach(file => {
                     uploadedFiles.push(file);
                     renderPreview(file);
                 });
                 
                 scanStatus.className = 'scan-success';
-                scanStatus.innerHTML = `✅ <b>Dokumen berhasil di upload!`;
+                scanStatus.innerHTML = `✅ <b>Dokumen berhasil di upload!</b>`;
                 isKtpValid = true;
+                
+                // TRIGGER SAVE SETELAH UPLOAD BERHASIL
+                saveFormProgress();
+                
             } else {
-                // Jika OCR tidak menemukan teks yang cukup (Buram / Blank / Gambar Kartun)
                 scanStatus.className = 'scan-error';
-                scanStatus.innerHTML = `❌ <b>Gagal Validasi.</b> Tidak ada teks alamat atau angka yang jelas pada dokumen. Mohon upload ulang dokumen dengan jelas.`;
+                scanStatus.innerHTML = `❌ <b>Gagal Validasi.</b> Tidak ada teks alamat atau angka yang jelas.`;
                 isKtpValid = false;
             }
 
         } catch (error) {
             console.error(error);
             scanStatus.className = 'scan-error';
-            scanStatus.innerHTML = `❌ Terjadi kesalahan saat memindai. Coba dokumen lain.`;
+            scanStatus.innerHTML = `❌ Terjadi kesalahan saat memindai.`;
             isKtpValid = false;
         }
         
@@ -759,7 +886,8 @@
     }
 
     function removeFile(fileToRemove, divElement) {
-        uploadedFiles = uploadedFiles.filter(f => f !== fileToRemove);
+        // Hapus dari memory array
+        uploadedFiles = uploadedFiles.filter(f => f.name !== fileToRemove.name); // compare by name
         divElement.remove();
         
         if (uploadedFiles.length === 0) {
@@ -767,6 +895,7 @@
             scanStatus.style.display = 'none';
         }
         checkKtpGate();
+        saveFormProgress(); // Save perubahan (penghapusan)
     }
 
     function checkKtpGate() {
@@ -782,25 +911,23 @@
         }
     }
 
-    // --- REVIEW PAGE (DATA LENGKAP) ---
+    // --- REVIEW PAGE ---
     function renderReviewPage() {
         const container = document.getElementById('review-content');
-        
-        // Ambil status belanja dari radio button
         const statusBelanja = document.querySelector('input[name="perluBelanja"]:checked')?.value || '-';
         
         const data = {
             'Tanggal Jastip': document.getElementById('tanggalJastip').value,
-            'Nama Pengirim di Indonesia': document.getElementById('nama').value,
-            'WA Pengirim di Indonesia': document.getElementById('whatsapp').value,
-            'Penerima di Jepang': document.getElementById('nama-penerima').value,
-            'No. Penerima di Jepang': document.getElementById('whatsapp-penerima').value, // Item Baru
+            'Nama Pengirim': document.getElementById('nama').value,
+            'WA Pengirim': document.getElementById('whatsapp').value,
+            'Penerima Jepang': document.getElementById('nama-penerima').value,
+            'No. Penerima Jepang': document.getElementById('whatsapp-penerima').value,
             'Alamat Jepang': document.getElementById('alamatJepang').value,
-						'Kode Pos': document.getElementById('kodePosJepang').value,
-            'Barang yang di Jastip': document.getElementById('barangJastip').value,
-            'Ada barang yang di belanjain': statusBelanja, // Item Baru
-            'Jadwal Kirim ke apato': document.getElementById('jamKirim').value,
-            'Foto yang di unggah': `${uploadedFiles.length} File`
+            'Kode Pos': document.getElementById('kodePosJepang').value,
+            'Barang Jastip': document.getElementById('barangJastip').value,
+            'Bantu Belanja?': statusBelanja, 
+            'Jadwal Kirim': document.getElementById('jamKirim').value,
+            'Dokumen': `${uploadedFiles.length} File`
         };
         
         let html = '<div class="review-list">';
@@ -814,36 +941,28 @@
         }
         html += '</div>';
         container.innerHTML = html;
-				
-				console.log('Review page rendered');
-        console.log('Submit button:', submitBtn);
-        console.log('Submit button disabled:', submitBtn.disabled);
         
-        // Pastikan tombol submit aktif
         setTimeout(() => {
             submitBtn.disabled = false;
             submitBtn.style.pointerEvents = 'auto';
             submitBtn.style.opacity = '1';
-            console.log('Submit button force enabled');
         }, 500);
     }
 
-    // --- NAV BUTTONS ---
     nextBtn.addEventListener('click', () => {
         if (validateStep(currentStep)) {
-						saveFormProgress(); // Simpan sebelum pindah step
-						currentStep++;
-						updateUI(currentStep);
-				}
-		});
+            saveFormProgress();
+            currentStep++;
+            updateUI(currentStep);
+        }
+    });
 
-		prevBtn.addEventListener('click', () => {
-				saveFormProgress(); // Simpan sebelum pindah step
-				currentStep--;
-				updateUI(currentStep);
-		});
+    prevBtn.addEventListener('click', () => {
+        saveFormProgress();
+        currentStep--;
+        updateUI(currentStep);
+    });
 
-    // --- IMAGE COMPRESSION ---
     function compressImage(file) {
         return new Promise((resolve) => {
             const reader = new FileReader();
@@ -865,26 +984,20 @@
         });
     }
 
-    // --- SUBMISSION ---
     document.getElementById('submissionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-				stopAutoSave();
-				
-				console.log('Form submit triggered');
         
-        // Validasi final sebelum submit
         if (!isKtpValid || uploadedFiles.length === 0) {
             alert('Harap upload dokumen KTP/alamat yang valid terlebih dahulu.');
             return;
         }
         
-        // Cek apakah semua field required terisi
+        // Final Validation
         const requiredInputs = document.querySelectorAll('input[required], select[required], textarea[required]');
         let allFilled = true;
         requiredInputs.forEach(input => {
             if (!input.value.trim() && input.type !== 'radio') {
                 allFilled = false;
-                console.log('Missing required field:', input.name);
             }
         });
         
@@ -893,8 +1006,6 @@
             return;
         }
         
-        console.log('All validations passed, submitting...');
-				
         loaderOverlay.style.display = 'flex';
         submitBtn.disabled = true;
 
@@ -920,7 +1031,12 @@
             });
             
             if(response.ok) {
+                // SUKSES TERKIRIM
                 loaderOverlay.style.display = 'none';
+                
+                // HAPUS SEMUA STORAGE KARENA SUDAH SELESAI
+                clearAllStorage();
+
                 const name = document.getElementById('nama').value;
                 const lineLink = "https://line.me/ti/p/@506hjesi";
                 const waLink = `https://wa.me/628131053924?text=${encodeURIComponent(`Halo Admin, saya ${name} sudah isi form Jastip Indo Jepang.`)}`;
@@ -937,27 +1053,13 @@
             submitBtn.disabled = false;
         }
     });
-		
-		window.addEventListener('load', () => {
-        loadFormProgress();
-        startAutoSave();
+
+    // === INITIALIZATION ===
+    window.addEventListener('load', () => {
+        loadFormProgress(); // Load draft dari LocalStorage & IndexedDB
+        startAutoSave();    // Mulai tracking perubahan
     });
 
-    // Simpan progress sebelum user keluar/refresh
-    window.addEventListener('beforeunload', (e) => {
-        saveFormProgress();
-        // Tampilkan warning jika form belum selesai
-        if (currentStep < steps.length - 1 && currentStep > 0) {
-            e.preventDefault();
-            e.returnValue = 'Data form Anda akan tersimpan. Yakin ingin keluar?';
-            return e.returnValue;
-        }
-    });
-
-		
-    // Init
-    updateUI(0);
 </script>
-
 </body>
 </html>
