@@ -264,7 +264,7 @@
     <div id="consent-modal">
         <h3>Syarat & Ketentuan Jastip</h3>
         <div id="terms-text">
-            <p><strong>Harap baca dengan saksama sebelum melanjutkan:</strong></p>
+            <p><strong>Harap baca dengan saksama dan scroll sampai habis sebelum melanjutkan:</strong></p>
             <ul>
                 <li>Barang yang dikirim adalah barang legal dan tidak melanggar hukum di Indonesia maupun Jepang. Seperti obat-obatan terlarang, senjata api, senjata tajam, bahan peledak, barang yang mudah terbakar, barang palsu, uang palsu dan beberapa barang spesifik dibawah ini:</li>
                 
@@ -313,7 +313,7 @@
                     <label>Pilih Tanggal Jastip</label>
                     <select id="tanggalJastip" name="tanggalJastip" required>
                         <option value="" disabled selected>Ketuk untuk memilih...</option>
-                        <option value="22 November 2025">22 November 2025 (Open)</option>
+                        <option value="22 November 2025" disabled>22 November 2025 (CLOSE)</option>
                         <option value="11 Desember 2025">11 Desember 2025</option>
                     </select>
                 </div>
@@ -343,7 +343,7 @@
                 </div>
                 <div class="input-group">
                     <label>Nomor Telepon Penerima di Jepang (10/11 digit, jika tidak ada bisa gunakan nomor kaisha (perusahaan), teman atau kerabat di Jepang)</label>
-                    <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{10}" placeholder="080/090... (10/11 digit)" required>
+										<input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{10,11}" placeholder="080/090... (10/11 digit)" required>
                 </div>
                 <div class="input-group">
                     <label>Kode Pos (7 Digit)</label>
@@ -519,6 +519,61 @@
     // State management
     let uploadedFiles = []; 
     let isKtpValid = false; 
+		let formProgress = {}; // Menyimpan progress form di memory
+		let autoSaveInterval = null;
+
+		// === AUTO-SAVE FUNCTIONS ===
+		function saveFormProgress() {
+				const formData = new FormData(document.getElementById('submissionForm'));
+				formProgress = {
+						step: currentStep,
+						data: Object.fromEntries(formData),
+						uploadedFiles: uploadedFiles.map(f => ({ name: f.name, size: f.size })),
+						isKtpValid: isKtpValid,
+						timestamp: new Date().toISOString()
+				};
+				console.log('Progress saved:', formProgress);
+		}
+
+		function loadFormProgress() {
+				if (formProgress && formProgress.data) {
+						// Restore input values
+						for (const [key, value] of Object.entries(formProgress.data)) {
+								const input = document.querySelector(`[name="${key}"]`);
+								if (input) {
+										if (input.type === 'radio') {
+												const radio = document.querySelector(`[name="${key}"][value="${value}"]`);
+												if (radio) radio.checked = true;
+										} else {
+												input.value = value;
+										}
+								}
+						}
+						
+						// Restore step
+						if (formProgress.step) {
+								currentStep = formProgress.step;
+								updateUI(currentStep);
+						}
+						
+						console.log('Progress loaded');
+				}
+		}
+
+		function startAutoSave() {
+				// Auto-save setiap 10 detik
+				if (autoSaveInterval) clearInterval(autoSaveInterval);
+				autoSaveInterval = setInterval(() => {
+						saveFormProgress();
+				}, 10000); // 10 detik
+		}
+
+		function stopAutoSave() {
+				if (autoSaveInterval) {
+						clearInterval(autoSaveInterval);
+						autoSaveInterval = null;
+				}
+		}
 
     // --- NAVIGATION LOGIC ---
     function updateUI(n) {
@@ -546,10 +601,27 @@
             nextBtn.disabled = false;
         }
         window.scrollTo({ top: 0, behavior: 'smooth' });
+				
+				saveFormProgress();
     }
 
     // --- VALIDATION ---
     function validateStep(n) {
+		
+				if (n === 2) {
+						const nomorJepang = document.getElementById('whatsapp-penerima');
+						const value = nomorJepang.value.trim();
+						
+						// Validasi: hanya angka, panjang 10-11 digit
+						if (value && !/^\d{10,11}$/.test(value)) {
+								alert("Nomor telepon Jepang harus 10 atau 11 digit angka.");
+								nomorJepang.style.borderColor = 'var(--error)';
+								return false;
+						} else {
+								nomorJepang.style.borderColor = '#e2e8f0';
+						}
+				}
+				
         if (n === 2 && !isKtpValid) {
             alert("Harap upload KTP yang valid dan tunggu proses scan Tesseract selesai.");
             return false;
@@ -724,6 +796,7 @@
             'Penerima di Jepang': document.getElementById('nama-penerima').value,
             'No. Penerima di Jepang': document.getElementById('whatsapp-penerima').value, // Item Baru
             'Alamat Jepang': document.getElementById('alamatJepang').value,
+						'Kode Pos': document.getElementById('kodePosJepang').value,
             'Barang yang di Jastip': document.getElementById('barangJastip').value,
             'Ada barang yang di belanjain': statusBelanja, // Item Baru
             'Jadwal Kirim ke apato': document.getElementById('jamKirim').value,
@@ -741,20 +814,34 @@
         }
         html += '</div>';
         container.innerHTML = html;
+				
+				console.log('Review page rendered');
+        console.log('Submit button:', submitBtn);
+        console.log('Submit button disabled:', submitBtn.disabled);
+        
+        // Pastikan tombol submit aktif
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.style.pointerEvents = 'auto';
+            submitBtn.style.opacity = '1';
+            console.log('Submit button force enabled');
+        }, 500);
     }
 
     // --- NAV BUTTONS ---
     nextBtn.addEventListener('click', () => {
         if (validateStep(currentStep)) {
-            currentStep++;
-            updateUI(currentStep);
-        }
-    });
+						saveFormProgress(); // Simpan sebelum pindah step
+						currentStep++;
+						updateUI(currentStep);
+				}
+		});
 
-    prevBtn.addEventListener('click', () => {
-        currentStep--;
-        updateUI(currentStep);
-    });
+		prevBtn.addEventListener('click', () => {
+				saveFormProgress(); // Simpan sebelum pindah step
+				currentStep--;
+				updateUI(currentStep);
+		});
 
     // --- IMAGE COMPRESSION ---
     function compressImage(file) {
@@ -781,6 +868,33 @@
     // --- SUBMISSION ---
     document.getElementById('submissionForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+				stopAutoSave();
+				
+				console.log('Form submit triggered');
+        
+        // Validasi final sebelum submit
+        if (!isKtpValid || uploadedFiles.length === 0) {
+            alert('Harap upload dokumen KTP/alamat yang valid terlebih dahulu.');
+            return;
+        }
+        
+        // Cek apakah semua field required terisi
+        const requiredInputs = document.querySelectorAll('input[required], select[required], textarea[required]');
+        let allFilled = true;
+        requiredInputs.forEach(input => {
+            if (!input.value.trim() && input.type !== 'radio') {
+                allFilled = false;
+                console.log('Missing required field:', input.name);
+            }
+        });
+        
+        if (!allFilled) {
+            alert('Harap lengkapi semua field yang wajib diisi.');
+            return;
+        }
+        
+        console.log('All validations passed, submitting...');
+				
         loaderOverlay.style.display = 'flex';
         submitBtn.disabled = true;
 
@@ -823,7 +937,24 @@
             submitBtn.disabled = false;
         }
     });
+		
+		window.addEventListener('load', () => {
+        loadFormProgress();
+        startAutoSave();
+    });
 
+    // Simpan progress sebelum user keluar/refresh
+    window.addEventListener('beforeunload', (e) => {
+        saveFormProgress();
+        // Tampilkan warning jika form belum selesai
+        if (currentStep < steps.length - 1 && currentStep > 0) {
+            e.preventDefault();
+            e.returnValue = 'Data form Anda akan tersimpan. Yakin ingin keluar?';
+            return e.returnValue;
+        }
+    });
+
+		
     // Init
     updateUI(0);
 </script>
