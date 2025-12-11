@@ -404,7 +404,7 @@
                     <select id="tanggalJastip" name="tanggalJastip" required>
                         <option value="" disabled selected>Ketuk untuk memilih...</option>
                         <option value="22 November 2025" disabled>22 November 2025 (CLOSE)</option>
-                        <option value="11 Desember 2025">11 Desember 2025</option>
+                        <option value="11 Desember 2025">Desember 2025</option>
                         <option value="Januari 2026">Januari 2026</option>
                     </select>
                 </div>
@@ -433,8 +433,8 @@
                     <input type="text" id="nama-penerima" name="namaPenerima" required>
                 </div>
                 <div class="input-group">
-                    <label>Nomor Telepon Penerima di Jepang (10/11 digit, jika tidak ada bisa gunakan nomor kaisha (perusahaan), teman atau kerabat di Jepang)</label>
-                    <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{10,11}" placeholder="080/090... (10/11 digit)" required>
+                    <label>Nomor Telepon Penerima di Jepang (11 digit, jika tidak ada bisa gunakan nomor kaisha (perusahaan), teman atau kerabat di Jepang)</label>
+                    <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{11}" placeholder="080/090... (harus 11 digit)" required>
                 </div>
                 <div class="input-group">
                     <label>Kode Pos (7 Digit)</label>
@@ -961,8 +961,8 @@
         if (n === 2) {
             const nomorJepang = document.getElementById('whatsapp-penerima');
             const value = nomorJepang.value.trim();
-            if (value && !/^\d{10,11}$/.test(value)) {
-                alert("Nomor telepon Jepang harus 10 atau 11 digit angka.");
+            if (value && !/^\d{11}$/.test(value)) {
+                alert("Nomor telepon Jepang harus 11 digit angka.");
                 nomorJepang.style.borderColor = 'var(--error)';
                 return false;
             } else {
