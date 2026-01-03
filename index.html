@@ -404,8 +404,9 @@
                     <select id="tanggalJastip" name="tanggalJastip" required>
                         <option value="" disabled selected>Ketuk untuk memilih...</option>
                         <option value="22 November 2025" disabled>22 November 2025 (CLOSE)</option>
-                        <option value="11 Desember 2025">Desember 2025</option>
+                        <option value="11 Desember 2025" disabled>Desember 2025 (CLOSE)</option>
                         <option value="Januari 2026">Januari 2026</option>
+						<option value="Februari 2026">Februari 2026</option>
                     </select>
                 </div>
                 <div class="input-group">
@@ -622,7 +623,8 @@
         <p style="color:#64748b;">Data jastip kamu sudah kami terima. Konfirmasi sekarang ke admin ya:</p>
         <div style="display:grid; gap:10px; margin-top:20px;">
             <a id="line-confirm-btn" href="#" target="_blank" style="background:#06c755; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Chat Line Admin (rekomendasi)</a>
-            <a id="whatsapp-confirm-btn" href="#" target="_blank" style="background:white; border:2px solid #25D366; color:#25D366; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Chat WhatsApp Admin</a>
+            
+            <a id="instagram-confirm-btn" href="#" target="_blank" style="background:white; border:2px solid #C13584; color:#C13584; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Konfirmasi ke Instagram</a>
         </div>
     </div>
 </div>
@@ -1290,10 +1292,16 @@
 
                 const name = document.getElementById('nama').value;
                 const lineLink = "https://line.me/ti/p/@506hjesi";
-                const waLink = `https://wa.me/628131053924?text=${encodeURIComponent(`Halo Admin, saya ${name} sudah isi form Jastip Indo Jepang.`)}`;
+                
+                // === PERUBAHAN UTAMA DI SINI ===
+                // Menetapkan Link Statis ke Instagram
+                const igLink = "https://www.instagram.com/yanoshi_jastip";
                 
                 document.getElementById('line-confirm-btn').href = lineLink;
-                document.getElementById('whatsapp-confirm-btn').href = waLink;
+                
+                // Mengupdate tombol Instagram dengan link baru
+                document.getElementById('instagram-confirm-btn').href = igLink;
+                
                 document.getElementById('success-popup-overlay').style.display = 'flex';
             } else {
                 throw new Error("Server Error");
