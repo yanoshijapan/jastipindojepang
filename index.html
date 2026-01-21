@@ -42,15 +42,16 @@
             background-attachment: fixed;
         }
 
-        /* --- CSS POPUP SYARAT & KETENTUAN --- */
-        #consent-overlay {
+        /* --- CSS POPUP UMUM (TERMS & STATEMENT) --- */
+        #consent-overlay, #statement-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85); z-index: 9999;
             display: flex; justify-content: center; align-items: center;
             backdrop-filter: blur(8px);
         }
+        #statement-overlay { z-index: 10000; display: none; } /* Lebih tinggi dari yang lain */
 
-        #consent-modal {
+        .modal-box {
             background: #ffffff;
             width: 90%; max-width: 600px;
             border-radius: 20px;
@@ -63,23 +64,29 @@
 
         @keyframes modalPop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        #consent-modal h3 {
+        .modal-title {
             color: var(--primary); text-align: center; margin: 0 0 15px 0;
             font-size: 1.4rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;
         }
 
-        #terms-text {
+        .scroll-content {
             flex: 1; overflow-y: auto;
             background: #f8fafc; padding: 15px;
             border: 1px solid #cbd5e1; border-radius: 12px;
-            margin-bottom: 20px; font-size: 0.9rem; line-height: 1.6; color: #334155;
+            margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; color: #334155;
             scroll-behavior: smooth;
         }
         
-        #terms-text img {
+        .scroll-content img {
             max-width: 100%; height: auto; border-radius: 8px; 
             margin: 10px 0; border: 1px solid #e2e8f0;
         }
+
+        /* KHUSUS STATEMENT TEXT */
+        .statement-text p { margin-bottom: 10px; }
+        .statement-text ol { padding-left: 20px; margin-bottom: 15px; }
+        .statement-text li { margin-bottom: 8px; }
+        .highlight-data { font-weight: 700; color: var(--text-main); }
 
         .consent-controls { border-top: 1px solid #f1f5f9; padding-top: 15px; }
         
@@ -93,23 +100,27 @@
 
         #consent-checkbox { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--primary); cursor: pointer; }
         #consent-checkbox:disabled { cursor: not-allowed; filter: grayscale(100%); opacity: 0.6; }
-        #consent-checkbox:disabled + span { color: #94a3b8; }
 
-        #agree-button {
+        .btn-full {
             width: 100%; padding: 14px; border: none; border-radius: 12px;
             font-weight: 700; font-size: 1rem; background: var(--primary); color: white;
             cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
         }
-        
-        #agree-button:disabled {
-            background: #cbd5e1; color: #64748b; cursor: not-allowed; box-shadow: none;
-        }
-        
-        #agree-button:not(:disabled):hover {
-            background: var(--primary-dark); transform: translateY(-2px);
-        }
+        .btn-full:disabled { background: #cbd5e1; color: #64748b; cursor: not-allowed; box-shadow: none; }
+        .btn-full:not(:disabled):hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        /* --- NEW: POPUP KONFIRMASI ALAMAT --- */
+        /* BUTTONS FOR STATEMENT MODAL */
+        .modal-buttons { display: flex; gap: 10px; margin-top: 15px; }
+        .modal-btn {
+            flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; cursor: pointer;
+            font-family: 'Plus Jakarta Sans', sans-serif; border: none; transition: all 0.2s;
+        }
+        .btn-back { background: #f1f5f9; color: var(--text-main); border: 2px solid #cbd5e1; }
+        .btn-back:hover { background: #e2e8f0; }
+        .btn-agree { background: var(--success); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-agree:hover { background: var(--success-dark); transform: translateY(-2px); }
+
+        /* --- POPUP WARNING ALAMAT --- */
         #address-warning-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.8); z-index: 6000;
@@ -136,7 +147,6 @@
             background: var(--warning-bg); padding: 15px; border-radius: 12px;
             border: 1px solid var(--warning-border); text-align: left; margin-bottom: 25px;
         }
-        
         .warning-buttons { display: flex; gap: 10px; flex-direction: column; }
         
         #btn-fix-addr {
@@ -145,7 +155,6 @@
             font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s;
         }
         #btn-fix-addr:hover { background: #f1f5f9; border-color: #94a3b8; }
-        
         #btn-confirm-addr {
             padding: 14px; border-radius: 12px; border: none;
             background: var(--primary); color: white; font-weight: 700; cursor: pointer;
@@ -158,7 +167,6 @@
             .warning-buttons { flex-direction: row; }
             #btn-fix-addr, #btn-confirm-addr { flex: 1; }
         }
-        /* ------------------------------------- */
 
         /* GLASS CONTAINER */
         .glass-container {
@@ -216,22 +224,13 @@
 
         /* CSS KHUSUS ALAMAT JEPANG */
         .japan-address-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Kolom */
-            gap: 15px;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #e2e8f0;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+            background: #f8fafc; padding: 15px; border-radius: 12px; border: 1px solid #e2e8f0;
         }
         .grid-item { display: flex; flex-direction: column; }
         .grid-item.full-width { grid-column: 1 / -1; }
-        .sub-label {
-            font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; font-weight: 500;
-        }
-        @media (max-width: 600px) {
-            .japan-address-grid { grid-template-columns: 1fr; }
-        }
+        .sub-label { font-size: 0.8rem; color: var(--text-light); margin-bottom: 5px; font-weight: 500; }
+        @media (max-width: 600px) { .japan-address-grid { grid-template-columns: 1fr; } }
 
         /* RADIO CARDS */
         .radio-cards-container { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
@@ -253,19 +252,11 @@
             background: #f8fafc; transition: all 0.3s; cursor: pointer;
         }
         .file-upload-wrapper:hover { border-color: var(--primary); background: #eff6ff; }
-        .file-upload-wrapper input[type="file"] {
-            position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer;
-        }
+        .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
         
-        /* PREVIEW GRID & DELETE BTN */
         #preview-container { display: flex; gap: 12px; margin-top: 15px; flex-wrap: wrap; }
-        .img-preview-card {
-            position: relative; width: 80px; height: 80px;
-            border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        .img-preview-card img {
-            width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid white;
-        }
+        .img-preview-card { position: relative; width: 80px; height: 80px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .img-preview-card img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; border: 2px solid white; }
         .delete-btn {
             position: absolute; top: -8px; right: -8px; background: var(--error); color: white;
             width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center;
@@ -334,22 +325,18 @@
 <body>
 
 <div id="consent-overlay">
-    <div id="consent-modal">
-        <h3>Syarat & Ketentuan Jastip</h3>
-        <div id="terms-text">
+    <div class="modal-box">
+        <h3 class="modal-title">Syarat & Ketentuan Jastip</h3>
+        <div class="scroll-content" id="terms-text">
             <p><strong>Harap baca dengan saksama dan scroll sampai habis sebelum melanjutkan:</strong></p>
             <ul>
                 <li>Barang yang dikirim adalah barang legal dan tidak melanggar hukum di Indonesia maupun Jepang. Seperti obat-obatan terlarang, senjata api, senjata tajam, bahan peledak, barang yang mudah terbakar, barang palsu, uang palsu dan beberapa barang spesifik dibawah ini:</li>
-                
                 <div style="text-align: center; margin: 15px 0;">
                     <img src="https://yanoshijapan.github.io/asetonline/barangumum.jpg" alt="Barang Dilarang Umum" loading="lazy">
                     <img src="https://yanoshijapan.github.io/asetonline/barangspesifik.jpg" alt="Barang Dilarang Spesifik" loading="lazy">
                 </div>
-                
                 <li><strong style="color: var(--error);">PENTING:</strong> Jika barang tersebut tetap dikirim ke basecamp kami, maka kami akan kembalikan barang tersebut ke pengirim.</li>
                 <li>Kami tidak bertanggung jawab atas kerusakan barang yang disebabkan oleh pihak ketiga (maskapai/kurir).</li>
-                <li>Keterlambatan pengiriman yang disebabkan oleh faktor di luar kendali kami (cuaca, delay pesawat, dll) akan diinformasikan sesegera mungkin.</li>
-                <li>Dengan melanjutkan, Anda menyatakan bahwa semua informasi yang diberikan adalah benar dan akurat.</li>
                 <li>Pajak bea cukai (jika ada) akan menjadi tanggung jawab penerima.</li>
                 <li style="margin-bottom: 50px;"><strong>Silakan scroll sampai habis untuk membuka tombol setuju.</strong></li>
             </ul>
@@ -359,7 +346,34 @@
                 <input type="checkbox" id="consent-checkbox" disabled>
                 <span>Saya telah membaca dan menyetujui semua syarat & ketentuan yang berlaku.</span>
             </label>
-            <button id="agree-button" disabled>Setuju & Lanjutkan</button>
+            <button id="agree-button" class="btn-full" disabled>Setuju & Lanjutkan</button>
+        </div>
+    </div>
+</div>
+
+<div id="statement-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title">Surat Pernyataan</h3>
+        <div class="scroll-content statement-text">
+            <p>Saya yang bertanda tangan di bawah ini:</p>
+            <p>
+                Nama : <span id="stmt-name" class="highlight-data">-</span><br>
+                No. Telepon/WA : <span id="stmt-wa" class="highlight-data">-</span><br>
+                Tanggal Jastip : <span id="stmt-date" class="highlight-data">-</span>
+            </p>
+            <p>Dengan ini menyatakan bahwa:</p>
+            <ol>
+                <li>Paket yang saya kirimkan ke Basecamp adalah barang yang aman dan bukan barang terlarang (illegal/prohibited items) untuk dibawa masuk ke wilayah Jepang sesuai regulasi yang berlaku.</li>
+                <li>Apabila saat pemeriksaan ditemukan barang yang dilarang, maka saya bersedia jika barang tersebut tidak diberangkatkan atau dikembalikan (retur) ke alamat saya dengan seluruh biaya ongkos kirim ditanggung oleh saya pribadi.</li>
+            </ol>
+            <p>Demikian pernyataan ini saya buat dengan sadar dan tanpa paksaan.</p>
+            <p style="text-align: right; margin-top: 20px;">
+                <span id="stmt-timestamp">-</span>
+            </p>
+        </div>
+        <div class="modal-buttons">
+            <button id="btn-back-stmt" class="modal-btn btn-back">Kembali</button>
+            <button id="btn-agree-stmt" class="modal-btn btn-agree">Setuju & Lanjutkan ➜</button>
         </div>
     </div>
 </div>
@@ -384,15 +398,12 @@
     <div class="header-logo">
         <img src="https://yanoshijapan.github.io/jastip/jastip%202.png" alt="Yanoshi Logo">
     </div>
-    <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn">
-        Ke Website ➜
-    </a>
+    <a href="https://yanoshijapan.github.io/jastipyanoshi/" class="header-btn">Ke Website ➜</a>
 </header>
 
 <main>
     <div class="glass-container">
         <h1>Yanoshi Jastip - Indo > Japan</h1>
-        
         <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
         <div class="step-text" id="step-text">1/6</div>
 
@@ -434,7 +445,7 @@
                     <input type="text" id="nama-penerima" name="namaPenerima" required>
                 </div>
                 <div class="input-group">
-                    <label>Nomor Telepon Penerima di Jepang (11 digit, jika tidak ada bisa gunakan nomor kaisha (perusahaan), teman atau kerabat di Jepang)</label>
+                    <label>Nomor Telepon Penerima di Jepang (11 digit)</label>
                     <input type="tel" id="whatsapp-penerima" name="whatsappPenerima" pattern="\d{11}" placeholder="080/090... (harus 11 digit)" required>
                 </div>
                 <div class="input-group">
@@ -444,102 +455,46 @@
                 
                 <div class="input-group">
                     <label>Alamat Lengkap di Jepang</label>
-                    
                     <div class="japan-address-grid">
                         <div class="grid-item full-width">
                             <span class="sub-label">Perfektur (Todofuken)</span>
                             <select id="addr_pref" class="addr-part" required>
                                 <option value="" disabled selected>Pilih Perfektur...</option>
                                 <option value="Hokkaido-ken">Hokkaido</option>
-                                <option value="Aomori-ken">Aomori</option>
-                                <option value="Iwate-ken">Iwate</option>
-                                <option value="Miyagi-ken">Miyagi</option>
-                                <option value="Akita-ken">Akita</option>
-                                <option value="Yamagata-ken">Yamagata</option>
-                                <option value="Fukushima-ken">Fukushima</option>
-                                <option value="Ibaraki-ken">Ibaraki</option>
-                                <option value="Tochigi-ken">Tochigi</option>
-                                <option value="Gunma-ken">Gunma</option>
-                                <option value="Saitama-ken">Saitama</option>
-                                <option value="Chiba-ken">Chiba</option>
                                 <option value="Tokyo-ken">Tokyo</option>
-                                <option value="Kanagawa-ken">Kanagawa</option>
-                                <option value="Niigata-ken">Niigata</option>
-                                <option value="Toyama-ken">Toyama</option>
-                                <option value="Ishikawa-ken">Ishikawa</option>
-                                <option value="Fukui-ken">Fukui</option>
-                                <option value="Yamanashi-ken">Yamanashi</option>
-                                <option value="Nagano-ken">Nagano</option>
-                                <option value="Gifu-ken">Gifu</option>
-                                <option value="Shizuoka-ken">Shizuoka</option>
                                 <option value="Aichi-ken">Aichi</option>
-                                <option value="Mie-ken">Mie</option>
-                                <option value="Shiga-ken">Shiga</option>
-                                <option value="Kyoto-ken">Kyoto</option>
                                 <option value="Osaka-ken">Osaka</option>
-                                <option value="Hyogo-ken">Hyogo</option>
-                                <option value="Nara-ken">Nara</option>
-                                <option value="Wakayama-ken">Wakayama</option>
-                                <option value="Tottori-ken">Tottori</option>
-                                <option value="Shimane-ken">Shimane</option>
-                                <option value="Okayama-ken">Okayama</option>
-                                <option value="Hiroshima-ken">Hiroshima</option>
-                                <option value="Yamaguchi-ken">Yamaguchi</option>
-                                <option value="Tokushima-ken">Tokushima</option>
-                                <option value="Kagawa-ken">Kagawa</option>
-                                <option value="Ehime-ken">Ehime</option>
-                                <option value="Kochi-ken">Kochi</option>
-                                <option value="Fukuoka-ken">Fukuoka</option>
-                                <option value="Saga-ken">Saga</option>
-                                <option value="Nagasaki-ken">Nagasaki</option>
-                                <option value="Kumamoto-ken">Kumamoto</option>
-                                <option value="Oita-ken">Oita</option>
-                                <option value="Miyazaki-ken">Miyazaki</option>
-                                <option value="Kagoshima-ken">Kagoshima</option>
-                                <option value="Okinawa-ken">Okinawa</option>
+                                <option value="Lainnya">Lainnya (Tulis Manual jika tidak ada)</option>
                             </select>
                         </div>
-
                         <div class="grid-item">
-                            <span class="sub-label">Kota / Wilayah (Shi/Ku/Machi/Mura)</span>
+                            <span class="sub-label">Kota / Wilayah</span>
                             <input type="text" id="addr_city" class="addr-part" placeholder="Contoh: Nagoya-shi, Naka-ku" required>
                         </div>
-
                         <div class="grid-item">
                             <span class="sub-label">Chome - Banchi - Go</span>
                             <input type="text" id="addr_street" class="addr-part" placeholder="Contoh: Nishiki 3-15-13" required>
                         </div>
-
                         <div class="grid-item">
                             <span class="sub-label">Nama Gedung/Apato</span>
                             <input type="text" id="addr_bldg" class="addr-part" placeholder="Contoh: Central Park Tower" required>
                         </div>
-
                         <div class="grid-item">
-                            <span class="sub-label">No. Kamar (Room Number) / No. Rumah</span>
+                            <span class="sub-label">No. Kamar</span>
                             <input type="text" id="addr_room" class="addr-part" placeholder="Contoh: 105" required>
                         </div>
-
                     </div>
-
                     <textarea id="alamatJepang" name="alamatJepang" style="display:none;" required></textarea>
                 </div>
                 <div class="input-group" style="margin-top: 30px; border-top: 1px dashed #cbd5e1; padding-top: 20px;">
-                    <label style="color: var(--primary);">Upload Foto KTP Jepang atau dokumen lain yang tertera alamat jepang lengkap (Wajib)</label>
-                    <p style="font-size: 0.8rem; color: var(--text-light); margin-bottom: 10px;">
-                        *Sistem akan memindai dokumen secara otomatis.
-                    </p>
-                    
+                    <label style="color: var(--primary);">Upload Foto KTP Jepang / Dokumen Alamat (Wajib)</label>
                     <div class="file-upload-wrapper">
                         <div style="font-size: 2rem; margin-bottom: 10px;">📸</div>
                         <div style="color: var(--text-light);">Klik untuk upload KTP/dokumen alamat</div>
                         <input type="file" id="foto" multiple accept="image/*">
                     </div>
-
                     <div id="scan-status"></div>
-
                     <div id="preview-container"></div>
-                    
                     <div id="ktp-warning" style="color: var(--error); font-size: 0.85rem; margin-top: 10px; display: none;">
                         ⚠️ Harap upload KTP/dokumen yang memuat teks alamat/angka yang jelas.
                     </div>
@@ -547,35 +502,30 @@
             </div>
 
             <div class="form-step" data-step="4">
-                <h3 style="color: var(--primary);">Detail Barang yang di Jastip</h3>
+                <h3 style="color: var(--primary);">Detail Barang</h3>
                 <div class="input-group">
                     <label>List Barang & Jumlah</label>
-                    <textarea id="barangJastip" name="barangJastip" rows="4" placeholder="1. Tas Laptop (1 pcs)&#10;2. Baju (2 pcs)&#10;3. Sepatu (1 psg)" required></textarea>
+                    <textarea id="barangJastip" name="barangJastip" rows="4" placeholder="1. Tas Laptop (1 pcs)&#10;2. Baju (2 pcs)" required></textarea>
                 </div>
                 <div class="input-group">
-                    <label>Ada yang perlu tim Kami belanjakan?</label>
+                    <label>Bantu Belanja?</label>
                     <div class="radio-cards-container">
                         <label class="radio-card">
                             <input type="radio" name="perluBelanja" value="Ya" required>
-                            <div class="card-content">
-                                <span>Ya, Tolong</span>
-                            </div>
+                            <div class="card-content"><span>Ya, Tolong</span></div>
                         </label>
                         <label class="radio-card">
                             <input type="radio" name="perluBelanja" value="Tidak">
-                            <div class="card-content">
-                                <span>Tidak Perlu</span>
-                            </div>
+                            <div class="card-content"><span>Tidak Perlu</span></div>
                         </label>
                     </div>
-                    <a href="https://yanoshijapan.github.io/belanjajastip/" target="_blank" style="display:block; text-align:center; margin-top:15px; color:var(--primary); font-weight:600; font-size:0.9rem;">🛍️ Lihat Katalog Toko</a>
                 </div>
             </div>
 
             <div class="form-step" data-step="5">
-                <h3 style="color: var(--primary);">Jadwal Pengiriman & Kontak</h3>
+                <h3 style="color: var(--primary);">Jadwal & Kontak</h3>
                 <div class="input-group">
-                    <label>Jam Pengiriman di Jepang (sesuaikan jam saat kamu berada di apato)</label>
+                    <label>Jam Pengiriman di Jepang</label>
                     <select id="jamKirim" name="jamKirim" required>
                         <option value="Pagi - Siang">Pagi - Siang Hari</option>
                         <option value="14:00 - 16:00">14:00 - 16:00</option>
@@ -593,11 +543,9 @@
             <div class="form-step" data-step="6">
                 <h3 style="color: var(--primary); text-align: center;">Summary Data Kamu</h3>
                 <p style="text-align: center; color: var(--text-light); font-size: 0.9rem;">
-                    Mohon periksa kembali datamu sebelum dikirim ya.
+                    Mohon periksa kembali datamu sebelum dikirim.
                 </p>
-                
-                <div style="background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0;" id="review-content">
-                    </div>
+                <div style="background: #f8fafc; padding: 20px; border-radius: 15px; border: 1px solid #e2e8f0;" id="review-content"></div>
             </div>
 
             <div class="nav-buttons">
@@ -612,7 +560,7 @@
 
 <div id="circular-loader-overlay">
     <div class="spinner"></div>
-    <div class="loading-text">Mengirim Data...</div>
+    <div class="loading-text">Mengirim Form...</div>
     <div style="color: #64748b; font-size: 0.9rem; margin-top: 5px;">Mohon tunggu sebentar</div>
 </div>
 
@@ -620,22 +568,42 @@
     <div style="background:white; padding:2rem; border-radius:20px; text-align:center; max-width:400px; width:90%;">
         <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
         <h2 style="color:var(--primary); margin:0;">Berhasil!</h2>
-        <p style="color:#64748b;">Data jastip kamu sudah kami terima. Konfirmasi sekarang ke admin ya:</p>
+        <p style="color:#64748b;">Data dan Surat Pernyataan sudah kami terima.</p>
         <div style="display:grid; gap:10px; margin-top:20px;">
-            <a id="line-confirm-btn" href="#" target="_blank" style="background:#06c755; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Chat Line Admin (rekomendasi)</a>
-            
+            <a id="line-confirm-btn" href="#" target="_blank" style="background:#06c755; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Konfirmasi ke Line Admin</a>
             <a id="instagram-confirm-btn" href="#" target="_blank" style="background:white; border:2px solid #C13584; color:#C13584; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Konfirmasi ke Instagram</a>
         </div>
     </div>
 </div>
 
 <script>
-    // === KONFIGURASI INDEXED DB (Untuk Penyimpanan Foto Aman & Besar) ===
+    // === KONFIGURASI DAN UTILITAS ===
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
+    
+    // DB & State
     const DB_NAME = 'YanoshiJastipDB';
     const DB_VERSION = 1;
     const STORE_NAME = 'jastip_images';
+    let uploadedFiles = []; 
+    let isKtpValid = false; 
+    let autoSaveInterval = null;
+    let currentStep = 0;
 
-    // Helper: Buka Database
+    // Elements
+    const steps = Array.from(document.querySelectorAll('.form-step'));
+    const nextBtn = document.getElementById('nextBtn');
+    const prevBtn = document.getElementById('prevBtn');
+    const submitBtn = document.getElementById('submit-btn');
+    const progressFill = document.getElementById('progress-fill');
+    const stepText = document.getElementById('step-text');
+    const loaderOverlay = document.getElementById('circular-loader-overlay');
+    
+    // Statement Elements
+    const statementOverlay = document.getElementById('statement-overlay');
+    const btnBackStmt = document.getElementById('btn-back-stmt');
+    const btnAgreeStmt = document.getElementById('btn-agree-stmt');
+
+    // === 1. LOGIKA DB (IndexedDB) ===
     function openDB() {
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -650,29 +618,18 @@
         });
     }
 
-    // Helper: Simpan File ke DB
     async function saveFileToDB(file) {
         const db = await openDB();
         const tx = db.transaction(STORE_NAME, 'readwrite');
         const store = tx.objectStore(STORE_NAME);
-        
-        // Baca file sebagai ArrayBuffer untuk disimpan
         const arrayBuffer = await file.arrayBuffer();
-        
         return new Promise((resolve, reject) => {
-            const request = store.put({
-                id: file.name, // Gunakan nama file sebagai ID sederhana
-                name: file.name,
-                type: file.type,
-                data: arrayBuffer,
-                lastModified: file.lastModified
-            });
+            const request = store.put({ id: file.name, name: file.name, type: file.type, data: arrayBuffer, lastModified: file.lastModified });
             request.onsuccess = () => resolve();
             request.onerror = () => reject();
         });
     }
 
-    // Helper: Ambil Semua File dari DB
     async function getAllFilesFromDB() {
         const db = await openDB();
         const tx = db.transaction(STORE_NAME, 'readonly');
@@ -681,173 +638,38 @@
             const request = store.getAll();
             request.onsuccess = (e) => {
                 const results = e.target.result;
-                // Convert kembali ke object File
-                const files = results.map(item => new File([item.data], item.name, {
-                    type: item.type,
-                    lastModified: item.lastModified
-                }));
+                const files = results.map(item => new File([item.data], item.name, { type: item.type, lastModified: item.lastModified }));
                 resolve(files);
             };
             request.onerror = () => reject();
         });
     }
 
-    // Helper: Hapus Database (Saat Submit Sukses)
     async function clearDB() {
         const db = await openDB();
         const tx = db.transaction(STORE_NAME, 'readwrite');
         tx.objectStore(STORE_NAME).clear();
     }
 
-    // === LOGIKA PENGGABUNGAN ALAMAT JEPANG (BARU) ===
-    document.addEventListener("DOMContentLoaded", function() {
-        const addrParts = ['addr_pref', 'addr_city', 'addr_street', 'addr_bldg', 'addr_room'];
-        const hiddenAddress = document.getElementById('alamatJepang');
-
-        function combineAddress() {
-            const pref = document.getElementById('addr_pref').value;
-            const city = document.getElementById('addr_city').value.trim();
-            const street = document.getElementById('addr_street').value.trim();
-            const bldg = document.getElementById('addr_bldg').value.trim();
-            const room = document.getElementById('addr_room').value.trim();
-
-            // Format Standar Jepang: 
-            // Perfektur, Kota, Chome-Banchi-Go, Nama Gedung, Kamar
-            let fullAddress = "";
-
-            if(pref) fullAddress += pref + ", ";
-            if(city) fullAddress += city + ", ";
-            if(street) fullAddress += street;
-            
-            // Tambah koma jika ada gedung
-            if(bldg) fullAddress += ", " + bldg;
-            
-            // Tambah tanda 'No.' atau langsung angka kamar
-            if(room) fullAddress += ", " + room;
-
-            // Masukkan ke textarea tersembunyi
-            hiddenAddress.value = fullAddress;
-            
-            // Trigger event input agar auto-save system mendeteksi perubahan
-            hiddenAddress.dispatchEvent(new Event('input'));
-        }
-
-        // Pasang 'penyimak' (event listener) di setiap kolom input
-        addrParts.forEach(id => {
-            const el = document.getElementById(id);
-            if(el) {
-                el.addEventListener('input', combineAddress);
-                el.addEventListener('change', combineAddress); // Untuk dropdown
-            }
-        });
-    });
-
-    // === LOGIKA POPUP CONSENT (DENGAN MEMORY) ===
-    document.addEventListener("DOMContentLoaded", function() {
-        const termsBox = document.getElementById('terms-text');
-        const checkBox = document.getElementById('consent-checkbox');
-        const labelText = document.querySelector('#label-checkbox span');
-        const agreeBtn = document.getElementById('agree-button');
-        const overlay = document.getElementById('consent-overlay');
-        
-        // Cek apakah user sudah pernah setuju sebelumnya
-        const hasAgreed = localStorage.getItem('yanoshi_terms_agreed');
-        
-        if (hasAgreed === 'true') {
-            // Jika sudah setuju, sembunyikan popup langsung
-            overlay.style.display = 'none';
-        } else {
-            // Jika belum, kunci scroll
-            document.body.style.overflow = 'hidden';
-        }
-
-        // 1. Deteksi Scroll Mentok Bawah
-        termsBox.addEventListener('scroll', function() {
-            if (termsBox.scrollTop + termsBox.clientHeight >= termsBox.scrollHeight - 10) {
-                checkBox.disabled = false;
-                labelText.style.color = 'var(--text-main)'; 
-                labelText.parentElement.title = "";
-            }
-        });
-
-        // 2. Deteksi Checkbox Dicentang
-        checkBox.addEventListener('change', function() {
-            if (this.checked) {
-                agreeBtn.disabled = false;
-                agreeBtn.innerHTML = "Setuju & Lanjutkan 🚀";
-            } else {
-                agreeBtn.disabled = true;
-                agreeBtn.innerHTML = "Setuju & Lanjutkan";
-            }
-        });
-
-        // 3. Tombol Setuju Diklik
-        agreeBtn.addEventListener('click', function() {
-            overlay.style.transition = 'opacity 0.3s ease';
-            overlay.style.opacity = '0';
-            
-            // SIMPAN STATUS SETUJU KE LOCALSTORAGE
-            localStorage.setItem('yanoshi_terms_agreed', 'true');
-            
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                document.body.style.overflow = 'auto'; 
-            }, 300);
-        });
-    });
-
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzP6vX9FwdEJxyFCwv3-SwRr1UUjwkbQfosPV7KXJudnKlTA3OKYHfQGAjolzJ3_WlAgg/exec';
-    
-    const steps = Array.from(document.querySelectorAll('.form-step'));
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const submitBtn = document.getElementById('submit-btn');
-    const progressFill = document.getElementById('progress-fill');
-    const stepText = document.getElementById('step-text');
-    const loaderOverlay = document.getElementById('circular-loader-overlay');
-    let currentStep = 0;
-    
-    // State management
-    let uploadedFiles = []; 
-    let isKtpValid = false; 
-    let autoSaveInterval = null;
-
-    // === AUTO-SAVE SYSTEM (LOCALSTORAGE + INDEXEDDB) ===
-    
+    // === 2. AUTO SAVE & LOAD ===
     async function saveFormProgress() {
         const formData = new FormData(document.getElementById('submissionForm'));
         const formEntries = Object.fromEntries(formData);
-        
-        // 1. Simpan Data Teks ke LocalStorage
-        const textData = {
-            step: currentStep,
-            data: formEntries,
-            isKtpValid: isKtpValid, // Simpan status validasi KTP
-            timestamp: new Date().toISOString()
-        };
+        const textData = { step: currentStep, data: formEntries, isKtpValid: isKtpValid, timestamp: new Date().toISOString() };
         localStorage.setItem('yanoshi_form_draft', JSON.stringify(textData));
-
-        // 2. Simpan File Gambar ke IndexedDB (Hanya jika ada perubahan file baru)
         if (uploadedFiles.length > 0) {
-            await clearDB(); // Hapus yg lama agar tidak duplikat
-            for (const file of uploadedFiles) {
-                await saveFileToDB(file);
-            }
+            await clearDB();
+            for (const file of uploadedFiles) await saveFileToDB(file);
         }
     }
 
     async function loadFormProgress() {
         try {
-            // 1. Load Data Teks
             const savedJson = localStorage.getItem('yanoshi_form_draft');
-            
-            // 2. Load File Gambar
             const savedFiles = await getAllFilesFromDB();
 
             if (savedJson) {
                 const savedState = JSON.parse(savedJson);
-                
-                // Restore Input Values
                 if (savedState.data) {
                     for (const [key, value] of Object.entries(savedState.data)) {
                         const input = document.querySelector(`[name="${key}"]`);
@@ -860,87 +682,78 @@
                             }
                         }
                     }
-                    
-                    // Trigger manual input event untuk Alamat Jepang agar sync dengan kolom2 baru
-                    // Jika data tersimpan adalah string lengkap, kita tidak memecahnya kembali (karena sulit),
-                    // Tapi user bisa mengetik ulang jika ingin revisi.
                 }
-
-                // Restore Step
-                if (typeof savedState.step !== 'undefined') {
-                    currentStep = savedState.step;
-                }
-
-                // Restore Status KTP Valid
-                if (savedState.isKtpValid) {
-                    isKtpValid = savedState.isKtpValid;
-                }
+                if (typeof savedState.step !== 'undefined') currentStep = savedState.step;
+                if (savedState.isKtpValid) isKtpValid = savedState.isKtpValid;
             }
 
-            // 3. Restore Files ke UI
             if (savedFiles && savedFiles.length > 0) {
                 uploadedFiles = savedFiles;
                 const previewContainer = document.getElementById('preview-container');
                 const scanStatus = document.getElementById('scan-status');
-
-                // Bersihkan container dulu
                 previewContainer.innerHTML = '';
-                
-                // Render ulang preview
-                savedFiles.forEach(file => {
-                    renderPreview(file);
-                });
-
-                // Update status UI jika valid
+                savedFiles.forEach(file => renderPreview(file));
                 if (isKtpValid) {
                     scanStatus.style.display = 'flex';
                     scanStatus.className = 'scan-success';
                     scanStatus.innerHTML = `✅ <b>Data Restored!</b> Dokumen KTP Anda tersimpan aman.`;
-                    
-                    // Sembunyikan warning
                     const warning = document.getElementById('ktp-warning');
                     if(warning) warning.style.display = 'none';
                 }
             }
-
-            // Update UI ke step yang tersimpan
             updateUI(currentStep);
-
         } catch (error) {
-            console.error("Gagal load progress:", error);
-            // Fallback jika error, mulai dari awal
             updateUI(0);
         }
     }
 
     function clearAllStorage() {
         localStorage.removeItem('yanoshi_form_draft');
-        // Jangan hapus 'yanoshi_terms_agreed' agar user tidak perlu setuju terms lagi
-        clearDB(); // Hapus gambar
+        clearDB();
     }
 
     function startAutoSave() {
         if (autoSaveInterval) clearInterval(autoSaveInterval);
-        // Save setiap kali ada input (debounce) atau interval
-        document.getElementById('submissionForm').addEventListener('input', () => {
-             // Save on input change (ringan karena ke LocalStorage & DB async)
-             saveFormProgress();
-        });
-        
-        // Juga save saat pindah step (sudah di handle di tombol next)
+        document.getElementById('submissionForm').addEventListener('input', () => saveFormProgress());
     }
 
-    // --- NAVIGATION LOGIC ---
+    // === 3. ALAMAT JEPANG LOGIC ===
+    document.addEventListener("DOMContentLoaded", function() {
+        const addrParts = ['addr_pref', 'addr_city', 'addr_street', 'addr_bldg', 'addr_room'];
+        const hiddenAddress = document.getElementById('alamatJepang');
+        function combineAddress() {
+            const pref = document.getElementById('addr_pref').value;
+            const city = document.getElementById('addr_city').value.trim();
+            const street = document.getElementById('addr_street').value.trim();
+            const bldg = document.getElementById('addr_bldg').value.trim();
+            const room = document.getElementById('addr_room').value.trim();
+            let fullAddress = "";
+            if(pref) fullAddress += pref + ", ";
+            if(city) fullAddress += city + ", ";
+            if(street) fullAddress += street;
+            if(bldg) fullAddress += ", " + bldg;
+            if(room) fullAddress += ", " + room;
+            hiddenAddress.value = fullAddress;
+            hiddenAddress.dispatchEvent(new Event('input'));
+        }
+        addrParts.forEach(id => {
+            const el = document.getElementById(id);
+            if(el) {
+                el.addEventListener('input', combineAddress);
+                el.addEventListener('change', combineAddress);
+            }
+        });
+    });
+
+    // === 4. UI NAVIGATION & VALIDATION ===
     function updateUI(n) {
         steps.forEach((step, index) => step.classList.toggle('active', index === n));
-        
         const progress = ((n + 1) / steps.length) * 100;
         progressFill.style.width = `${progress}%`;
         stepText.innerText = `Step ${n + 1} / ${steps.length}`;
-
         prevBtn.style.visibility = n === 0 ? 'hidden' : 'visible';
         
-        if (n === steps.length - 1) { // Last step (Review)
+        if (n === steps.length - 1) { // Review Step
             nextBtn.style.display = 'none';
             submitBtn.style.display = 'block';
             renderReviewPage(); 
@@ -949,16 +762,10 @@
             submitBtn.style.display = 'none';
         }
 
-        // Gate untuk Langkah 3 (KTP)
-        if (n === 2) {
-            checkKtpGate();
-        } else {
-            nextBtn.disabled = false;
-        }
+        if (n === 2) checkKtpGate(); else nextBtn.disabled = false;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // --- VALIDATION ---
     function validateStep(n) {
         if (n === 2) {
             const nomorJepang = document.getElementById('whatsapp-penerima');
@@ -967,22 +774,18 @@
                 alert("Nomor telepon Jepang harus 11 digit angka.");
                 nomorJepang.style.borderColor = 'var(--error)';
                 return false;
-            } else {
-                nomorJepang.style.borderColor = '#e2e8f0';
+            } else nomorJepang.style.borderColor = '#e2e8f0';
+            
+            if (!isKtpValid) {
+                alert("Harap upload KTP yang valid dan tunggu proses scan selesai.");
+                return false;
             }
         }
         
-        if (n === 2 && !isKtpValid) {
-            alert("Harap upload KTP yang valid dan tunggu proses scan selesai.");
-            return false;
-        }
-
-        // Seleksi input yang terlihat (visible)
         const inputs = steps[n].querySelectorAll('input[required], select[required], textarea[required]');
         let isValid = true;
         inputs.forEach(input => {
-            if (input.style.display === 'none') return; // Skip hidden inputs validation manually
-
+            if (input.style.display === 'none') return;
             if (input.type === 'radio') {
                 const name = input.name;
                 if(!steps[n].querySelector(`input[name="${name}"]:checked`)) isValid = false;
@@ -990,9 +793,7 @@
                 if (!input.value.trim() || (input.pattern && !new RegExp(input.pattern).test(input.value))) {
                     input.style.borderColor = 'var(--error)';
                     isValid = false;
-                } else {
-                    input.style.borderColor = '#e2e8f0';
-                }
+                } else input.style.borderColor = '#e2e8f0';
             }
             input.addEventListener('input', function() { this.style.borderColor = '#e2e8f0'; });
         });
@@ -1009,7 +810,7 @@
     styleSheet.innerText = `@keyframes shake { 0% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-5px); } 100% { transform: translateX(0); } }`;
     document.head.appendChild(styleSheet);
 
-    // --- KTP LOGIC & REAL OCR ---
+    // === 5. KTP & OCR ===
     const fotoInput = document.getElementById('foto');
     const previewContainer = document.getElementById('preview-container');
     const scanStatus = document.getElementById('scan-status');
@@ -1018,39 +819,25 @@
         const newFiles = Array.from(e.target.files);
         if (uploadedFiles.length + newFiles.length > 2) {
             alert("Maksimal 2 foto ya!");
-            fotoInput.value = ""; 
-            return;
+            fotoInput.value = ""; return;
         }
-        if(newFiles.length > 0) {
-            performOCRScan(newFiles);
-        }
+        if(newFiles.length > 0) performOCRScan(newFiles);
     });
 
     async function performOCRScan(newFiles) {
         isKtpValid = false;
         checkKtpGate();
-        
         scanStatus.style.display = 'flex';
         scanStatus.className = 'scan-loading';
         scanStatus.innerHTML = `<div class="spinner" style="width:15px; height:15px; border-width:2px; margin:0;"></div> Sedang memindai teks pada foto...`;
 
         try {
             let textFound = false;
-
             for (const file of newFiles) {
-                // Tesseract
-                const { data: { text } } = await Tesseract.recognize(
-                    file,
-                    'eng', 
-                    { logger: m => console.log(m) }
-                );
-                
+                const { data: { text } } = await Tesseract.recognize(file, 'eng', { logger: m => console.log(m) });
                 const hasNumbers = /\d+/.test(text);
                 const hasLetters = /[a-zA-Z]{3,}/.test(text);
-                
-                if (hasNumbers && hasLetters && text.length > 10) {
-                    textFound = true;
-                }
+                if (hasNumbers && hasLetters && text.length > 10) textFound = true;
             }
 
             if (textFound) {
@@ -1058,27 +845,21 @@
                     uploadedFiles.push(file);
                     renderPreview(file);
                 });
-                
                 scanStatus.className = 'scan-success';
                 scanStatus.innerHTML = `✅ <b>Dokumen berhasil di upload!</b>`;
                 isKtpValid = true;
-                
-                // TRIGGER SAVE SETELAH UPLOAD BERHASIL
                 saveFormProgress();
-                
             } else {
                 scanStatus.className = 'scan-error';
                 scanStatus.innerHTML = `❌ <b>Gagal Validasi.</b> Tidak ada teks alamat atau angka yang jelas.`;
                 isKtpValid = false;
             }
-
         } catch (error) {
             console.error(error);
             scanStatus.className = 'scan-error';
             scanStatus.innerHTML = `❌ Terjadi kesalahan saat memindai.`;
             isKtpValid = false;
         }
-        
         checkKtpGate();
         fotoInput.value = ""; 
     }
@@ -1088,15 +869,12 @@
         reader.onload = (e) => {
             const div = document.createElement('div');
             div.className = 'img-preview-card';
-            
             const img = document.createElement('img');
             img.src = e.target.result;
-            
             const btn = document.createElement('button');
             btn.className = 'delete-btn';
             btn.innerHTML = '✕';
             btn.onclick = () => removeFile(file, div);
-
             div.appendChild(img);
             div.appendChild(btn);
             previewContainer.appendChild(div);
@@ -1105,16 +883,14 @@
     }
 
     function removeFile(fileToRemove, divElement) {
-        // Hapus dari memory array
-        uploadedFiles = uploadedFiles.filter(f => f.name !== fileToRemove.name); // compare by name
+        uploadedFiles = uploadedFiles.filter(f => f.name !== fileToRemove.name);
         divElement.remove();
-        
         if (uploadedFiles.length === 0) {
             isKtpValid = false;
             scanStatus.style.display = 'none';
         }
         checkKtpGate();
-        saveFormProgress(); // Save perubahan (penghapusan)
+        saveFormProgress();
     }
 
     function checkKtpGate() {
@@ -1130,40 +906,29 @@
         }
     }
 
-    // --- REVIEW PAGE ---
     function renderReviewPage() {
         const container = document.getElementById('review-content');
         const statusBelanja = document.querySelector('input[name="perluBelanja"]:checked')?.value || '-';
-        
-        // Mengambil nilai alamat dari textarea tersembunyi
         const alamatFull = document.getElementById('alamatJepang').value;
-
         const data = {
             'Tanggal Jastip': document.getElementById('tanggalJastip').value,
             'Nama Pengirim': document.getElementById('nama').value,
             'WA Pengirim': document.getElementById('whatsapp').value,
             'Penerima Jepang': document.getElementById('nama-penerima').value,
             'No. Penerima Jepang': document.getElementById('whatsapp-penerima').value,
-            'Alamat Jepang': alamatFull, // Menggunakan alamat gabungan
+            'Alamat Jepang': alamatFull,
             'Kode Pos': document.getElementById('kodePosJepang').value,
             'Barang Jastip': document.getElementById('barangJastip').value,
             'Bantu Belanja?': statusBelanja, 
             'Jadwal Kirim': document.getElementById('jamKirim').value,
             'Dokumen': `${uploadedFiles.length} File`
         };
-        
         let html = '<div class="review-list">';
         for (const [key, value] of Object.entries(data)) {
-            html += `
-                <div class="review-item">
-                    <span class="review-label">${key}</span>
-                    <span class="review-value">${value || '-'}</span>
-                </div>
-            `;
+            html += `<div class="review-item"><span class="review-label">${key}</span><span class="review-value">${value || '-'}</span></div>`;
         }
         html += '</div>';
         container.innerHTML = html;
-        
         setTimeout(() => {
             submitBtn.disabled = false;
             submitBtn.style.pointerEvents = 'auto';
@@ -1171,15 +936,12 @@
         }, 500);
     }
 
-    // === MODIFIKASI LOGIKA TOMBOL NEXT UNTUK POPUP ALAMAT ===
+    // === 6. NAVIGATION LOGIC (WARNING ADDRESS) ===
     nextBtn.addEventListener('click', () => {
         if (validateStep(currentStep)) {
-            // Cek jika sedang di Step 3 (index 2)
             if (currentStep === 2) {
-                // Tampilkan Popup Warning Alamat
                 document.getElementById('address-warning-overlay').style.display = 'flex';
             } else {
-                // Lanjut normal untuk step lain
                 saveFormProgress();
                 currentStep++;
                 updateUI(currentStep);
@@ -1187,14 +949,9 @@
         }
     });
     
-    // --- EVENT LISTENER TOMBOL DI DALAM POPUP WARNING ---
-    
-    // 1. Tombol Perbaiki Alamat (Tutup Popup, Tetap di Step 3)
     document.getElementById('btn-fix-addr').addEventListener('click', () => {
          document.getElementById('address-warning-overlay').style.display = 'none';
     });
-
-    // 2. Tombol Lanjutkan (Tutup Popup, Lanjut ke Step 4)
     document.getElementById('btn-confirm-addr').addEventListener('click', () => {
          document.getElementById('address-warning-overlay').style.display = 'none';
          saveFormProgress();
@@ -1229,43 +986,60 @@
         });
     }
 
-    document.getElementById('submissionForm').addEventListener('submit', async (e) => {
+    // === 7. LOGIKA SUBMIT DAN STATEMENT POPUP (UTAMA) ===
+    
+    // A. Intercept Submit Button -> Buka Popup Statement
+    document.getElementById('submissionForm').addEventListener('submit', (e) => {
         e.preventDefault();
         
+        // Final Validation
         if (!isKtpValid || uploadedFiles.length === 0) {
             alert('Harap upload dokumen KTP/alamat yang valid terlebih dahulu.');
             return;
         }
         
-        // Final Validation
-        const requiredInputs = document.querySelectorAll('input[required], select[required], textarea[required]');
-        let allFilled = true;
-        requiredInputs.forEach(input => {
-             // Skip hidden inputs (khususnya textarea alamatJepang yang sudah dihandle logic lain)
-            if (input.style.display === 'none') {
-                if(!input.value.trim()) allFilled = false; // Tetap cek isinya
-                return;
-            }
-            if (!input.value.trim() && input.type !== 'radio') {
-                allFilled = false;
-            }
-        });
+        // Isi Data ke Statement Popup
+        const nama = document.getElementById('nama').value;
+        const wa = document.getElementById('whatsapp').value;
+        const tgl = document.getElementById('tanggalJastip').value;
         
-        if (!allFilled) {
-            alert('Harap lengkapi semua field yang wajib diisi.');
-            return;
-        }
+        const now = new Date();
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        const timestampStr = now.toLocaleDateString('id-ID', options);
+
+        document.getElementById('stmt-name').innerText = nama;
+        document.getElementById('stmt-wa').innerText = wa;
+        document.getElementById('stmt-date').innerText = tgl;
+        document.getElementById('stmt-timestamp').innerText = timestampStr;
+
+        // Tampilkan Popup Statement
+        statementOverlay.style.display = 'flex';
+    });
+
+    // B. Tombol "Kembali" di Popup Statement
+    btnBackStmt.addEventListener('click', () => {
+        statementOverlay.style.display = 'none';
+    });
+
+    // C. Tombol "Setuju dan Lanjutkan" -> Lakukan Pengiriman Sebenarnya
+    btnAgreeStmt.addEventListener('click', async () => {
+        // Tutup popup statement
+        statementOverlay.style.display = 'none';
         
+        // Tampilkan Loading
         loaderOverlay.style.display = 'flex';
         submitBtn.disabled = true;
 
+        await processSubmission();
+    });
+
+    // Fungsi Pengiriman Data (Backend Fetch)
+    async function processSubmission() {
         try {
-            const formData = new FormData(e.target);
+            const formElement = document.getElementById('submissionForm');
+            const formData = new FormData(formElement);
             const data = Object.fromEntries(formData);
             delete data.foto; 
-            // Hapus field pecahan alamat agar tidak mengotori spreadsheet (opsional, tapi lebih bersih)
-            // Namun form data mengambil berdasarkan 'name'. Karena input pecahan tidak punya 'name',
-            // mereka tidak akan masuk ke FormData, jadi aman.
 
             const fileData = [];
             for(let i=0; i<uploadedFiles.length; i++) {
@@ -1284,22 +1058,14 @@
             });
             
             if(response.ok) {
-                // SUKSES TERKIRIM
+                // SUKSES
                 loaderOverlay.style.display = 'none';
-                
-                // HAPUS SEMUA STORAGE KARENA SUDAH SELESAI
                 clearAllStorage();
 
-                const name = document.getElementById('nama').value;
+                // Update Links
                 const lineLink = "https://line.me/ti/p/@506hjesi";
-                
-                // === PERUBAHAN UTAMA DI SINI ===
-                // Menetapkan Link Statis ke Instagram
                 const igLink = "https://www.instagram.com/yanoshi_jastip";
-                
                 document.getElementById('line-confirm-btn').href = lineLink;
-                
-                // Mengupdate tombol Instagram dengan link baru
                 document.getElementById('instagram-confirm-btn').href = igLink;
                 
                 document.getElementById('success-popup-overlay').style.display = 'flex';
@@ -1311,14 +1077,47 @@
             loaderOverlay.style.display = 'none';
             submitBtn.disabled = false;
         }
+    }
+
+    // === 8. TERMS POPUP LOGIC ===
+    document.addEventListener("DOMContentLoaded", function() {
+        const termsBox = document.getElementById('terms-text');
+        const checkBox = document.getElementById('consent-checkbox');
+        const agreeBtn = document.getElementById('agree-button');
+        const overlay = document.getElementById('consent-overlay');
+        
+        const hasAgreed = localStorage.getItem('yanoshi_terms_agreed');
+        if (hasAgreed === 'true') {
+            overlay.style.display = 'none';
+        } else {
+            document.body.style.overflow = 'hidden';
+        }
+
+        termsBox.addEventListener('scroll', function() {
+            if (termsBox.scrollTop + termsBox.clientHeight >= termsBox.scrollHeight - 10) {
+                checkBox.disabled = false;
+            }
+        });
+
+        checkBox.addEventListener('change', function() {
+            agreeBtn.disabled = !this.checked;
+        });
+
+        agreeBtn.addEventListener('click', function() {
+            overlay.style.opacity = '0';
+            localStorage.setItem('yanoshi_terms_agreed', 'true');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.body.style.overflow = 'auto'; 
+            }, 300);
+        });
     });
 
-    // === INITIALIZATION ===
+    // INIT
     window.addEventListener('load', () => {
-        loadFormProgress(); // Load draft dari LocalStorage & IndexedDB
-        startAutoSave();    // Mulai tracking perubahan
+        loadFormProgress();
+        startAutoSave();
     });
-
 </script>
 </body>
 </html>
