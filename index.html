@@ -414,8 +414,6 @@
                     <label>Pilih Tanggal Jastip</label>
                     <select id="tanggalJastip" name="tanggalJastip" required>
                         <option value="" disabled selected>Ketuk untuk memilih...</option>
-                        <option value="22 November 2025" disabled>22 November 2025 (CLOSE)</option>
-                        <option value="11 Desember 2025" disabled>Desember 2025 (CLOSE)</option>
                         <option value="Januari 2026" disabled>Januari 2026 (CLOSE)</option>
 						<option value="Februari 2026">Februari 2026</option>
 						<option value="Maret 2026">Maret 2026</option>
@@ -584,6 +582,16 @@
                     <label>Kontak (Line/IG)</label>
                     <input type="text" id="akunSosmed" name="akunSosmed" placeholder="Contoh : Line : abcdef , IG : abcdef" required>
                 </div>
+                
+                <div class="input-group">
+                    <label>Tau Jastip dari mana? (Opsional)</label>
+                    <select id="sumberInfo" name="sumberInfo">
+                        <option value="" disabled selected>-- Pilih --</option>
+                        <option value="Instagram">Instagram</option>
+                        <option value="Website">Website</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
             </div>
 
             <div class="form-step" data-step="6">
@@ -614,7 +622,7 @@
     <div style="background:white; padding:2rem; border-radius:20px; text-align:center; max-width:400px; width:90%;">
         <div style="font-size:4rem; margin-bottom:1rem;">🎉</div>
         <h2 style="color:var(--primary); margin:0;">Berhasil!</h2>
-        <p style="color:#64748b;">Data dan Surat Pernyataan sudah kami terima.</p>
+        <p style="color:#64748b;">Form sudah kami terima. Silakan konfirmasi ke Admin melalui salah satu tombol di bawah ini.</p>
         <div style="display:grid; gap:10px; margin-top:20px;">
             <a id="line-confirm-btn" href="#" target="_blank" style="background:#06c755; color:white; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Konfirmasi ke Line Admin</a>
             <a id="instagram-confirm-btn" href="#" target="_blank" style="background:white; border:2px solid #C13584; color:#C13584; text-decoration:none; padding:12px; border-radius:10px; font-weight:bold;">Konfirmasi ke Instagram</a>
@@ -967,6 +975,7 @@
             'Barang Jastip': document.getElementById('barangJastip').value,
             'Bantu Belanja?': statusBelanja, 
             'Jadwal Kirim': document.getElementById('jamKirim').value,
+            'Sumber Info': document.getElementById('sumberInfo').value || '-', // <-- UPDATE DISINI
             'Dokumen': `${uploadedFiles.length} File`
         };
         let html = '<div class="review-list">';
